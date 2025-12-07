@@ -1,0 +1,110 @@
+// Rol
+export interface Rol {
+  IdRol: number;
+  RolNombre: string;
+}
+
+// Usuario
+export interface Usuario {
+  IdUsuario?: number;
+  Nombre: string;
+  Apellido: string;
+  UsuarioNombre: string;
+  ClaveHash?: string;
+  IdRol: number;
+  Activo: boolean;
+  FechaRegistro?: string;
+  Rol?: Rol;
+}
+
+// Categoría
+export interface Categoria {
+  IdCategoria?: number;
+  Nombre: string;
+  Descripcion: string;
+}
+
+// Producto
+export interface Producto {
+  IdProducto?: number;
+  Nombre: string;
+  IdCategoria: number;
+  Precio: number;
+  Stock: number;
+  Estado: boolean;
+  Descripcion: string;
+  StockMinimo: number;
+  FechaRegistro?: string;
+  EsProductoFinal: boolean;
+  Categoria?: Categoria;
+}
+
+// Venta
+export interface Venta {
+  IdVenta?: number;
+  Fecha?: string;
+  IdUsuario: number;
+  Total: number;
+  MetodoPago: string;
+  Comentario?: string;
+  Estado: boolean;
+  FechaVenta?: string;
+  CantidadTotalProductos?: number;
+  Usuario?: Usuario;
+  DetallesVenta?: DetalleVenta[];
+}
+
+// Detalle Venta
+export interface DetalleVenta {
+  IdDetalle?: number;
+  IdVenta?: number;
+  IdProducto: number;
+  Cantidad: number;
+  PrecioUnitario: number;
+  Subtotal: number;
+  Producto?: Producto;
+}
+
+// Reporte
+export interface Reporte {
+  IdReporte?: number;
+  IdUsuario: number;
+  TipoReporte: string;
+  FechaGeneracion?: string;
+  RutaArchivo: string;
+  Usuario?: Usuario;
+}
+
+// API Response
+export interface ApiResponse<T = any> {
+  message?: string;
+  error?: string;
+  data?: T;
+}
+
+// Login
+export interface LoginRequest {
+  usuario: string;
+  clave: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  usuario: Usuario;
+  token: string;
+}
+
+// Estadísticas Dashboard
+export interface EstadisticasVentas {
+  totalVentas: number;
+  montoTotal: number;
+  totalProductos: number;
+  promedioVenta: number;
+}
+
+export interface EstadisticasProductos {
+  totalProductos: number;
+  productosActivos: number;
+  productosStockBajo: number;
+  valorInventario: number;
+}

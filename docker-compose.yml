@@ -1,0 +1,84 @@
+
+services:
+  # Base de Datos MariaDB
+  mariadb:
+    image: mariadb:11.2
+    container_name: smart-inventory-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: Smart_Inventory
+      MYSQL_USER: smartuser
+      MYSQL_PASSWORD: smart123
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./Smart_Inventory_Script.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - smart-inventory-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: smart-inventory-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_USER: smartuser
+      DB_PASSWORD: smart123
+      DB_NAME: Smart_Inventory
+      JWT_SECRET: tu_super_secreto_jwt_2025_cambiar_en_produccion
+      JWT_EXPIRES_IN: 24h
+      CORS_ORIGIN: http://localhost:5173
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - smart-inventory-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s  # ⬅️ Aumentado para dar tiempo al backend
+
+  # Frontend React
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: smart-inventory-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:3000/api
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - smart-inventory-network
+
+volumes:
+  mariadb_data:
+    driver: local
+
+networks:
+  smart-inventory-network:
+    driver: bridge
