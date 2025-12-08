@@ -1,3 +1,4 @@
+// frontend/src/services/ventaService.ts
 import api from './api';
 import { Venta, DetalleVenta, ApiResponse } from '../types';
 

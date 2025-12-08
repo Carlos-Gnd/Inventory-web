@@ -23,15 +23,14 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ENDPOINT DE SALUD 
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'ok', 
+// ENDPOINT DE SALUD
+app.get('/api/health', (_req, res) => {
+  res.status(200).json({
+    status: 'ok',
     message: 'Smart Inventory API funcionando correctamente',
     timestamp: new Date().toISOString()
   });
 });
-
 
 // Routes
 app.use('/api/auth', authRoutes);

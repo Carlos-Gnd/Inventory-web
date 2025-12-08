@@ -1,3 +1,4 @@
+// frontend/src/services/productoService.ts
 import api from './api';
 import { Producto, ApiResponse } from '../types';
 

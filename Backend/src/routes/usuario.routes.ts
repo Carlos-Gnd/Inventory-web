@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { UsuarioRepository } from '../repositories/usuario.repository';
 import { hashPasswordSHA256 } from '../utils/auth';
 import { authMiddleware, isAdmin, AuthRequest } from '../middleware/auth.middleware';
@@ -11,7 +11,7 @@ const usuarioRepo = new UsuarioRepository();
 router.use(authMiddleware);
 
 // Listar usuarios (solo admin)
-router.get('/', isAdmin, async (req, res) => {
+router.get('/', isAdmin, async (_req: Request, res: Response): Promise<void> => {
   try {
     const usuarios = await usuarioRepo.listar();
     // Remover hashes de contraseñas
@@ -37,10 +37,11 @@ router.post(
     body('ClaveHash').isLength({ min: 6 }).withMessage('Contraseña debe tener al menos 6 caracteres'),
     body('IdRol').isInt().withMessage('Rol es requerido')
   ],
-  async (req, res) => {
+  async (req: Request, res: Response): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -50,9 +51,9 @@ router.post(
       usuario.FechaRegistro = new Date();
 
       const idUsuario = await usuarioRepo.registrar(usuario);
-      res.status(201).json({ 
-        message: 'Usuario registrado exitosamente', 
-        idUsuario 
+      res.status(201).json({
+        message: 'Usuario registrado exitosamente',
+        idUsuario
       });
     } catch (error: any) {
       console.error('Error al registrar usuario:', error);
@@ -71,10 +72,11 @@ router.put(
     body('UsuarioNombre').notEmpty().withMessage('Usuario es requerido'),
     body('IdRol').isInt().withMessage('Rol es requerido')
   ],
-  async (req, res) => {
+  async (req: Request, res: Response): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -100,10 +102,11 @@ router.put(
   [
     body('nuevaClave').isLength({ min: 6 }).withMessage('Contraseña debe tener al menos 6 caracteres')
   ],
-  async (req: AuthRequest, res) => {
+  async (req: AuthRequest, res: Response): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -112,12 +115,12 @@ router.put(
 
       // Verificar que sea admin o el mismo usuario
       if (req.user?.role !== 1 && req.user?.userId !== idUsuario) {
-        return res.status(403).json({ error: 'No autorizado' });
+        res.status(403).json({ error: 'No autorizado' });
+        return;
       }
 
       const nuevaClaveHash = hashPasswordSHA256(nuevaClave);
       const resultado = await usuarioRepo.cambiarClave(idUsuario, nuevaClaveHash);
-
       if (resultado) {
         res.json({ message: 'Contraseña actualizada exitosamente' });
       } else {
@@ -131,11 +134,10 @@ router.put(
 );
 
 // Eliminar (desactivar) usuario (solo admin)
-router.delete('/:id', isAdmin, async (req, res) => {
+router.delete('/:id', isAdmin, async (req: Request, res: Response): Promise<void> => {
   try {
     const idUsuario = parseInt(req.params.id);
     const resultado = await usuarioRepo.eliminar(idUsuario);
-
     if (resultado) {
       res.json({ message: 'Usuario eliminado exitosamente' });
     } else {

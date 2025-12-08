@@ -1,3 +1,4 @@
+// frontend/src/store/authStore.ts
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { Usuario } from '../types'

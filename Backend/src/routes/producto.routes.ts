@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { ProductoRepository } from '../repositories/producto.repository';
 import { authMiddleware, isAdmin } from '../middleware/auth.middleware';
 import { body, validationResult } from 'express-validator';
@@ -10,7 +10,7 @@ const productoRepo = new ProductoRepository();
 router.use(authMiddleware);
 
 // Listar productos
-router.get('/', async (req, res) => {
+router.get('/', async (_req: Request, res: Response): Promise<void> => {
   try {
     const productos = await productoRepo.listar();
     res.json(productos);
@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 });
 
 // Obtener productos con stock bajo
-router.get('/stock-bajo', async (req, res) => {
+router.get('/stock-bajo', async (_req: Request, res: Response): Promise<void> => {
   try {
     const productos = await productoRepo.listar();
     const productosStockBajo = productos.filter(
@@ -51,10 +51,11 @@ router.post(
     body('StockMinimo')
       .isInt({ min: 0 }).withMessage('Stock mínimo debe ser un número entero positivo')
   ],
-  async (req, res) => {
+  async (req: Request, res: Response): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -66,9 +67,9 @@ router.post(
       };
 
       const idProducto = await productoRepo.registrar(producto);
-      res.status(201).json({ 
-        message: 'Producto registrado exitosamente', 
-        idProducto 
+      res.status(201).json({
+        message: 'Producto registrado exitosamente',
+        idProducto
       });
     } catch (error: any) {
       console.error('Error al registrar producto:', error);
@@ -94,10 +95,11 @@ router.put(
     body('StockMinimo')
       .isInt({ min: 0 }).withMessage('Stock mínimo debe ser un número entero positivo')
   ],
-  async (req, res) => {
+  async (req: Request, res: Response): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -118,11 +120,10 @@ router.put(
 );
 
 // Eliminar (desactivar) producto (solo admin)
-router.delete('/:id', isAdmin, async (req, res) => {
+router.delete('/:id', isAdmin, async (req: Request, res: Response): Promise<void> => {
   try {
     const idProducto = parseInt(req.params.id);
     const resultado = await productoRepo.eliminar(idProducto);
-
     if (resultado) {
       res.json({ message: 'Producto eliminado exitosamente' });
     } else {
@@ -135,13 +136,14 @@ router.delete('/:id', isAdmin, async (req, res) => {
 });
 
 // Actualizar stock (usado internamente por ventas)
-router.patch('/:id/stock', async (req, res) => {
+router.patch('/:id/stock', async (req: Request, res: Response): Promise<void> => {
   try {
     const idProducto = parseInt(req.params.id);
     const { cantidad } = req.body;
 
     if (!cantidad || cantidad <= 0) {
-      return res.status(400).json({ error: 'Cantidad inválida' });
+      res.status(400).json({ error: 'Cantidad inválida' });
+      return;
     }
 
     const resultado = await productoRepo.actualizarStock(idProducto, cantidad);

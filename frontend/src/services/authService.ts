@@ -1,3 +1,4 @@
+// frontend/src/services/authService.ts
 import api from './api';
 import { LoginRequest, LoginResponse } from '../types';
 

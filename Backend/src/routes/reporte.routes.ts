@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { VentaRepository } from '../repositories/venta.repository';
 import { ProductoRepository } from '../repositories/producto.repository';
 import { authMiddleware } from '../middleware/auth.middleware';
@@ -13,12 +13,13 @@ const productoRepo = new ProductoRepository();
 router.use(authMiddleware);
 
 // Obtener datos para reporte de ventas
-router.get('/ventas', async (req, res) => {
+router.get('/ventas', async (req: Request, res: Response): Promise<void> => {
   try {
     const { fechaInicio, fechaFin } = req.query;
 
     if (!fechaInicio || !fechaFin) {
-      return res.status(400).json({ error: 'Fechas de inicio y fin son requeridas' });
+      res.status(400).json({ error: 'Fechas de inicio y fin son requeridas' });
+      return;
     }
 
     const inicio = new Date(fechaInicio as string);
@@ -47,7 +48,7 @@ router.get('/ventas', async (req, res) => {
 });
 
 // Obtener datos para reporte de productos
-router.get('/productos', async (req, res) => {
+router.get('/productos', async (_req: Request, res: Response): Promise<void> => {
   try {
     const productos = await productoRepo.listar();
     
@@ -75,16 +76,18 @@ router.get('/productos', async (req, res) => {
 });
 
 // Generar reporte de ventas en Excel
-router.post('/ventas/excel', async (req, res) => {
+router.post('/ventas/excel', async (req: Request, res: Response): Promise<void> => {
   try {
     const { fechaInicio, fechaFin } = req.body;
 
     if (!fechaInicio || !fechaFin) {
-      return res.status(400).json({ error: 'Fechas de inicio y fin son requeridas' });
+      res.status(400).json({ error: 'Fechas de inicio y fin son requeridas' });
+      return;
     }
 
     const inicio = new Date(fechaInicio);
     const fin = new Date(fechaFin);
+
     const ventas = await ventaRepo.listarPorFechas(inicio, fin);
 
     // Crear workbook
@@ -156,16 +159,18 @@ router.post('/ventas/excel', async (req, res) => {
 });
 
 // Generar reporte de ventas en PDF
-router.post('/ventas/pdf', async (req, res) => {
+router.post('/ventas/pdf', async (req: Request, res: Response): Promise<void> => {
   try {
     const { fechaInicio, fechaFin } = req.body;
 
     if (!fechaInicio || !fechaFin) {
-      return res.status(400).json({ error: 'Fechas de inicio y fin son requeridas' });
+      res.status(400).json({ error: 'Fechas de inicio y fin son requeridas' });
+      return;
     }
 
     const inicio = new Date(fechaInicio);
     const fin = new Date(fechaFin);
+
     const ventas = await ventaRepo.listarPorFechas(inicio, fin);
 
     // Crear PDF
@@ -190,7 +195,6 @@ router.post('/ventas/pdf', async (req, res) => {
     // Tabla
     let y = doc.y;
     const tableTop = y + 10;
-    const columnWidth = 90;
 
     // Headers
     doc.fontSize(9).font('Helvetica-Bold');

@@ -1,3 +1,4 @@
+// frontend/src/pages/RegistrarVentas.tsx
 import { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';

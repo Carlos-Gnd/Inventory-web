@@ -1,3 +1,4 @@
+// frontend/src/store/cartStore.ts
 import { create } from 'zustand'
 import { Producto, DetalleVenta } from '../types'
 

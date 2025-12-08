@@ -1,3 +1,4 @@
+// frontend/src/pages/Productos.tsx
 import { useState, useEffect } from 'react';
 import { productoService } from '../services/productoService';
 import { categoriaService } from '../services/categoriaService';

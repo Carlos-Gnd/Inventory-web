@@ -1,5 +1,5 @@
+// frontend/src/services/reporteService.ts
 import api from './api';
-import { EstadisticasVentas, EstadisticasProductos } from '../types';
 
 export const reporteService = {
   obtenerReporteVentas: async (fechaInicio: string, fechaFin: string) => {
@@ -15,7 +15,7 @@ export const reporteService = {
   },
 
   exportarVentasExcel: async (fechaInicio: string, fechaFin: string) => {
-    const response = await api.post('/reportes/ventas/excel', 
+    const response = await api.post('/reportes/ventas/excel',
       { fechaInicio, fechaFin },
       { responseType: 'blob' }
     );
@@ -31,7 +31,7 @@ export const reporteService = {
   },
 
   exportarVentasPDF: async (fechaInicio: string, fechaFin: string) => {
-    const response = await api.post('/reportes/ventas/pdf', 
+    const response = await api.post('/reportes/ventas/pdf',
       { fechaInicio, fechaFin },
       { responseType: 'blob' }
     );

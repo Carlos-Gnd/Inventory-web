@@ -1,0 +1,1 @@
+// fronted/src/store/uiStore.ts

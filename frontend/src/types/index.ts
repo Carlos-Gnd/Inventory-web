@@ -1,3 +1,4 @@
+// frontend/src/types/index.ts
 // Rol
 export interface Rol {
   IdRol: number;

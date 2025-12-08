@@ -1,8 +1,8 @@
+// frontend/src/pages/Reportes.tsx
 import { useState, useEffect } from 'react';
 import { reporteService } from '../services/reporteService';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 import { FileSpreadsheet, FileText, Calendar, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formatCurrency } from '../utils/formatters';

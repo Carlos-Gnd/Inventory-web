@@ -1,3 +1,4 @@
+// frontend/src/services/categoriaService.ts
 import api from './api';
 import { Categoria, ApiResponse } from '../types';
 

@@ -1,4 +1,4 @@
-
+# ./docker-compose.yml
 services:
   # Base de Datos MariaDB
   mariadb:
@@ -71,7 +71,7 @@ services:
       VITE_API_URL: http://localhost:3000/api
     depends_on:
       backend:
-        condition: service_healthy
+        condition: service_started
     networks:
       - smart-inventory-network
 

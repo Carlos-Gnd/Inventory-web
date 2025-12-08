@@ -1,3 +1,4 @@
+// frontend/src/App.tsx
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/authStore'
 

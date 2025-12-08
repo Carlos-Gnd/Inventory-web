@@ -1,3 +1,4 @@
+// frontend/src/pages/Ventas.tsx
 import { useState, useEffect } from 'react';
 import { ventaService } from '../services/ventaService';
 import { Venta, DetalleVenta } from '../types';

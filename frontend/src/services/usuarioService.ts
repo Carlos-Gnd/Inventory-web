@@ -1,3 +1,4 @@
+// frontend/src/services/usuarioService.ts
 import api from './api';
 import { Usuario, ApiResponse } from '../types';
 
