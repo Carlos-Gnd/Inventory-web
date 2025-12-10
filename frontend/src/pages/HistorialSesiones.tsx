@@ -134,7 +134,7 @@ export default function HistorialSesiones() {
 
       {/* Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="border-l-4 border-l-blue-600">
+        <Card className="border-l-4 border-l-blue-600 dark:border-l-blue-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Sesiones</p>
@@ -148,7 +148,7 @@ export default function HistorialSesiones() {
           </div>
         </Card>
 
-        <Card className="border-l-4 border-l-green-600">
+        <Card className="border-l-4 border-l-green-600 dark:border-l-green-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Exitosas</p>
@@ -165,7 +165,7 @@ export default function HistorialSesiones() {
           </div>
         </Card>
 
-        <Card className="border-l-4 border-l-red-600">
+        <Card className="border-l-4 border-l-red- dark:border-l-red-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Fallidas</p>
@@ -179,7 +179,7 @@ export default function HistorialSesiones() {
           </div>
         </Card>
 
-        <Card className="border-l-4 border-l-purple-600">
+        <Card className="border-l-4 border-l-purple-600 dark:border-l-purple-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">IPs Únicas</p>

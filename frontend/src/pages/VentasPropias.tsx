@@ -22,7 +22,7 @@ export default function VentasPropias() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
-  
+
   const [detalleModalOpen, setDetalleModalOpen] = useState(false);
   const [detalleVenta, setDetalleVenta] = useState<DetalleVenta[]>([]);
   const [ventaSeleccionada, setVentaSeleccionada] = useState<Venta | null>(null);
@@ -118,7 +118,7 @@ export default function VentasPropias() {
       key: 'Total',
       header: 'Total',
       render: (v: Venta) => (
-        <span className="font-semibold text-green-600">
+        <span className="font-semibold text-green-600 dark:text-green-400">
           {formatCurrency(v.Total)}
         </span>
       )
@@ -153,7 +153,7 @@ export default function VentasPropias() {
             e.stopPropagation();
             handleVerDetalle(venta);
           }}
-          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+          className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
           title="Ver Detalle"
         >
           <Eye className="w-4 h-4" />
@@ -181,50 +181,50 @@ export default function VentasPropias() {
 
       {/* Estadísticas Personales */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="border-l-4 border-l-blue-600">
+        <Card className="border-l-4 border-l-blue-500 dark:border-l-blue-400">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Mis Ventas</p>
-              <p className="text-2xl font-bold text-gray-900">{totalVentas}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Mis Ventas</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalVentas}</p>
             </div>
-            <div className="p-3 bg-blue-100 rounded-full">
-              <TrendingUp className="w-6 h-6 text-blue-600" />
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+              <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
         </Card>
 
-        <Card className="border-l-4 border-l-green-600">
+        <Card className="border-l-4 border-l-green-500 dark:border-l-green-400">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Vendido</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(montoTotal)}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Total Vendido</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(montoTotal)}</p>
             </div>
-            <div className="p-3 bg-green-100 rounded-full">
-              <DollarSign className="w-6 h-6 text-green-600" />
+            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
+              <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
           </div>
         </Card>
 
-        <Card className="border-l-4 border-l-purple-600">
+        <Card className="border-l-4 border-l-purple-500 dark:border-l-purple-400">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Productos</p>
-              <p className="text-2xl font-bold text-gray-900">{totalProductos}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Productos</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalProductos}</p>
             </div>
-            <div className="p-3 bg-purple-100 rounded-full">
-              <Package className="w-6 h-6 text-purple-600" />
+            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+              <Package className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
           </div>
         </Card>
 
-        <Card className="border-l-4 border-l-orange-600">
+        <Card className="border-l-4 border-l-orange-500 dark:border-l-orange-400">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Promedio</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(promedioVenta)}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Promedio</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(promedioVenta)}</p>
             </div>
-            <div className="p-3 bg-orange-100 rounded-full">
-              <TrendingUp className="w-6 h-6 text-orange-600" />
+            <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-full">
+              <TrendingUp className="w-6 h-6 text-orange-600 dark:text-orange-400" />
             </div>
           </div>
         </Card>
@@ -254,14 +254,14 @@ export default function VentasPropias() {
                 <option value="Transferencia">Transferencia</option>
               </select>
             </div>
-            <div className="text-sm text-gray-600 flex items-center">
+            <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
               Total: <span className="font-semibold ml-1">{filteredVentas.length}</span> ventas
             </div>
           </div>
 
-          <div className="flex items-end gap-4 pt-4 border-t border-gray-200">
+          <div className="flex items-end gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Inicio</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha Inicio</label>
               <input
                 type="date"
                 value={fechaInicio}
@@ -270,7 +270,7 @@ export default function VentasPropias() {
               />
             </div>
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Fin</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha Fin</label>
               <input
                 type="date"
                 value={fechaFin}
@@ -302,21 +302,21 @@ export default function VentasPropias() {
       >
         {ventaSeleccionada && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
               <div>
-                <p className="text-sm text-gray-600">Fecha</p>
-                <p className="font-medium">{formatDateTime(ventaSeleccionada.FechaVenta!)}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Fecha</p>
+                <p className="font-medium text-gray-900 dark:text-white">{formatDateTime(ventaSeleccionada.FechaVenta!)}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Cajero</p>
-                <p className="font-medium">{user?.Nombre} {user?.Apellido}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Cajero</p>
+                <p className="font-medium text-gray-900 dark:text-white">{user?.Nombre} {user?.Apellido}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Método de Pago</p>
-                <p className="font-medium">{ventaSeleccionada.MetodoPago}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Método de Pago</p>
+                <p className="font-medium text-gray-900 dark:text-white">{ventaSeleccionada.MetodoPago}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Estado</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Estado</p>
                 <Badge variant={ventaSeleccionada.Estado ? 'success' : 'danger'}>
                   {ventaSeleccionada.Estado ? 'Activo' : 'Anulado'}
                 </Badge>
@@ -324,31 +324,31 @@ export default function VentasPropias() {
             </div>
 
             {ventaSeleccionada.Comentario && (
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-gray-600">Comentario</p>
-                <p className="font-medium">{ventaSeleccionada.Comentario}</p>
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Comentario</p>
+                <p className="font-medium text-gray-900 dark:text-white">{ventaSeleccionada.Comentario}</p>
               </div>
             )}
 
             <div>
-              <h3 className="font-semibold mb-3">Productos Vendidos</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Productos Vendidos</h3>
               <div className="space-y-2">
                 {detalleVenta.map((detalle, index) => (
-                  <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <div key={index} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
                     <div className="flex-1">
-                      <p className="font-medium">{detalle.Producto?.Nombre}</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="font-medium text-gray-900 dark:text-white">{detalle.Producto?.Nombre}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         {detalle.Cantidad} x {formatCurrency(detalle.PrecioUnitario)}
                       </p>
                     </div>
-                    <p className="font-bold text-green-600">{formatCurrency(detalle.Subtotal)}</p>
+                    <p className="font-bold text-green-600 dark:text-green-400">{formatCurrency(detalle.Subtotal)}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-200">
-              <div className="flex justify-between text-xl font-bold text-primary-600">
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex justify-between text-xl font-bold text-primary-600 dark:text-primary-400">
                 <span>Total:</span>
                 <span>{formatCurrency(ventaSeleccionada.Total)}</span>
               </div>

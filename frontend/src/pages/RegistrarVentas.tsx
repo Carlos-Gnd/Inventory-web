@@ -18,12 +18,12 @@ import { METODOS_PAGO } from '../utils/constants';
 export default function RegistrarVentas() {
   const { user } = useAuthStore();
   const { items, subtotal, descuento, total, addItem, removeItem, updateQuantity, setDescuento, clearCart } = useCartStore();
-  
+
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredProductos, setFilteredProductos] = useState<Producto[]>([]);
-  
+
   const [metodoPago, setMetodoPago] = useState('Efectivo');
   const [montoRecibido, setMontoRecibido] = useState(0);
   const [comentario, setComentario] = useState('');
@@ -64,13 +64,13 @@ export default function RegistrarVentas() {
       toast.error('Producto sin stock');
       return;
     }
-    
+
     const cantidadEnCarrito = items.find(i => i.IdProducto === producto.IdProducto)?.Cantidad || 0;
     if (cantidadEnCarrito >= producto.Stock) {
       toast.error(`Stock máximo: ${producto.Stock}`);
       return;
     }
-    
+
     addItem(producto, 1);
     toast.success(`${producto.Nombre} agregado`);
     setSearchTerm('');
@@ -114,7 +114,7 @@ export default function RegistrarVentas() {
       };
 
       await ventaService.registrar(venta);
-      
+
       toast.success(
         `✅ Venta registrada\n${metodoPago === 'Efectivo' ? `Vuelto: ${formatCurrency(vuelto)}` : ''}`,
         { duration: 4000 }
@@ -153,22 +153,22 @@ export default function RegistrarVentas() {
               placeholder="Buscar producto por nombre..."
               autoFocus
             />
-            
+
             {searchTerm && filteredProductos.length > 0 && (
               <div className="mt-4 space-y-2 max-h-96 overflow-y-auto">
                 {filteredProductos.map((producto) => (
                   <div
                     key={producto.IdProducto}
                     onClick={() => handleAgregarProducto(producto)}
-                    className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg cursor-pointer border border-gray-200"
+                    className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer border border-gray-200 dark:border-gray-600 transition-colors"
                   >
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{producto.Nombre}</h4>
-                      <p className="text-sm text-gray-500">{producto.Categoria?.Nombre}</p>
+                      <h4 className="font-medium text-gray-900 dark:text-white">{producto.Nombre}</h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{producto.Categoria?.Nombre}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-primary-600">{formatCurrency(producto.Precio)}</p>
-                      <p className="text-sm text-gray-500">Stock: {producto.Stock}</p>
+                      <p className="font-bold text-primary-600 dark:text-primary-400">{formatCurrency(producto.Precio)}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Stock: {producto.Stock}</p>
                     </div>
                   </div>
                 ))}
@@ -179,43 +179,43 @@ export default function RegistrarVentas() {
           {/* Carrito */}
           <Card title="Carrito de Compras" subtitle={`${items.length} productos`}>
             {items.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                 <ShoppingCart className="w-16 h-16 mx-auto mb-4 opacity-50" />
                 <p>No hay productos en el carrito</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {items.map((item) => (
-                  <div key={item.IdProducto} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                  <div key={item.IdProducto} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div className="flex-1">
-                      <h4 className="font-medium">{item.Producto?.Nombre}</h4>
-                      <p className="text-sm text-gray-600">{formatCurrency(item.PrecioUnitario)}</p>
+                      <h4 className="font-medium text-gray-900 dark:text-white">{item.Producto?.Nombre}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{formatCurrency(item.PrecioUnitario)}</p>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => updateQuantity(item.IdProducto, item.Cantidad - 1)}
-                        className="p-1 hover:bg-gray-200 rounded"
+                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
                       >
-                        <Minus className="w-4 h-4" />
+                        <Minus className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                       </button>
-                      <span className="w-8 text-center font-medium">{item.Cantidad}</span>
+                      <span className="w-8 text-center font-medium text-gray-900 dark:text-white">{item.Cantidad}</span>
                       <button
                         onClick={() => updateQuantity(item.IdProducto, item.Cantidad + 1)}
-                        className="p-1 hover:bg-gray-200 rounded"
+                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
                         disabled={item.Cantidad >= (item.Producto?.Stock || 0)}
                       >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                       </button>
                     </div>
 
                     <div className="text-right min-w-[100px]">
-                      <p className="font-bold">{formatCurrency(item.Subtotal)}</p>
+                      <p className="font-bold text-gray-900 dark:text-white">{formatCurrency(item.Subtotal)}</p>
                     </div>
 
                     <button
                       onClick={() => removeItem(item.IdProducto)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                      className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -230,9 +230,9 @@ export default function RegistrarVentas() {
         <div className="space-y-4">
           <Card title="Resumen de Venta">
             <div className="space-y-4">
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-gray-600 dark:text-gray-300">
                 <span>Subtotal:</span>
-                <span className="font-medium">{formatCurrency(subtotal)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">{formatCurrency(subtotal)}</span>
               </div>
 
               <Input
@@ -244,15 +244,15 @@ export default function RegistrarVentas() {
                 icon={<DollarSign className="w-5 h-5 text-gray-400" />}
               />
 
-              <div className="pt-4 border-t border-gray-200">
-                <div className="flex justify-between text-xl font-bold text-primary-600">
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between text-xl font-bold text-primary-600 dark:text-primary-400">
                   <span>Total:</span>
                   <span>{formatCurrency(total)}</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Método de Pago</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Método de Pago</label>
                 <select
                   value={metodoPago}
                   onChange={(e) => setMetodoPago(e.target.value)}
@@ -276,10 +276,10 @@ export default function RegistrarVentas() {
                     onChange={(e) => setMontoRecibido(parseFloat(e.target.value) || 0)}
                     icon={<DollarSign className="w-5 h-5 text-gray-400" />}
                   />
-                  
+
                   <div className="flex justify-between text-lg font-medium">
-                    <span>Vuelto:</span>
-                    <span className={vuelto < 0 ? 'text-red-600' : 'text-green-600'}>
+                    <span className="text-gray-700 dark:text-gray-300">Vuelto:</span>
+                    <span className={vuelto < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}>
                       {formatCurrency(vuelto)}
                     </span>
                   </div>
@@ -287,7 +287,7 @@ export default function RegistrarVentas() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Comentario</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Comentario</label>
                 <textarea
                   value={comentario}
                   onChange={(e) => setComentario(e.target.value)}

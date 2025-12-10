@@ -17,7 +17,6 @@ export default function Reportes() {
   const [fechaFin, setFechaFin] = useState(() => {
     return new Date().toISOString().split('T')[0];
   });
-
   const [estadisticas, setEstadisticas] = useState<any>(null);
 
   useEffect(() => {
@@ -41,7 +40,6 @@ export default function Reportes() {
       toast.error('Selecciona un rango de fechas');
       return;
     }
-
     setLoading(true);
     try {
       await reporteService.exportarVentasExcel(
@@ -61,7 +59,6 @@ export default function Reportes() {
       toast.error('Selecciona un rango de fechas');
       return;
     }
-
     setLoading(true);
     try {
       await reporteService.exportarVentasPDF(
@@ -83,29 +80,31 @@ export default function Reportes() {
         <p className="text-gray-600 dark:text-gray-400 mt-2">Genera y descarga reportes de ventas</p>
       </div>
 
-      {/* Estadísticas rápidas */}
+      {/* Estadísticas rápidas - CORREGIDO */}
       {estadisticas && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="border-l-4 border-l-blue-600">
+          <Card className="border-l-4 border-l-blue-500 dark:border-l-blue-400">
             <div>
-              <p className="text-sm text-gray-600">Total Ventas</p>
-              <p className="text-2xl font-bold text-gray-900 mt-2">
+              <p className="text-sm text-gray-600 dark:text-gray-300">Total Ventas</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {estadisticas.totalVentas}
               </p>
             </div>
           </Card>
-          <Card className="border-l-4 border-l-green-600">
+          
+          <Card className="border-l-4 border-l-green-500 dark:border-l-green-400">
             <div>
-              <p className="text-sm text-gray-600">Monto Total</p>
-              <p className="text-2xl font-bold text-gray-900 mt-2">
+              <p className="text-sm text-gray-600 dark:text-gray-300">Monto Total</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {formatCurrency(estadisticas.montoTotal)}
               </p>
             </div>
           </Card>
-          <Card className="border-l-4 border-l-purple-600">
+          
+          <Card className="border-l-4 border-l-purple-500 dark:border-l-purple-400">
             <div>
-              <p className="text-sm text-gray-600">Productos Vendidos</p>
-              <p className="text-2xl font-bold text-gray-900 mt-2">
+              <p className="text-sm text-gray-600 dark:text-gray-300">Productos Vendidos</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {estadisticas.totalProductos}
               </p>
             </div>
@@ -118,7 +117,7 @@ export default function Reportes() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Fecha Inicio
               </label>
               <input
@@ -129,7 +128,7 @@ export default function Reportes() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Fecha Fin
               </label>
               <input
@@ -151,20 +150,20 @@ export default function Reportes() {
             </Button>
           </div>
 
-          <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Exportar Reporte
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Excel */}
-              <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200">
+              <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-800">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-3 bg-green-600 rounded-lg">
                     <FileSpreadsheet className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900">Excel</h4>
-                    <p className="text-sm text-gray-600">Formato .xlsx</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">Excel</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Formato .xlsx</p>
                   </div>
                 </div>
                 <Button
@@ -178,14 +177,14 @@ export default function Reportes() {
               </div>
 
               {/* PDF */}
-              <div className="p-6 bg-gradient-to-br from-red-50 to-orange-50 rounded-xl border border-red-200">
+              <div className="p-6 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-xl border border-red-200 dark:border-red-800">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-3 bg-red-600 rounded-lg">
                     <FileText className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900">PDF</h4>
-                    <p className="text-sm text-gray-600">Formato .pdf</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">PDF</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Formato .pdf</p>
                   </div>
                 </div>
                 <Button
@@ -201,9 +200,9 @@ export default function Reportes() {
             </div>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-800">
-              💡 <strong>Tip:</strong> Los reportes incluyen información detallada de todas las ventas en el período seleccionado.
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <p className="text-sm text-blue-800 dark:text-blue-300">
+              💡 Los reportes incluyen información detallada de todas las ventas en el período seleccionado.
             </p>
           </div>
         </div>

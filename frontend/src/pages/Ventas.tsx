@@ -1,4 +1,4 @@
-// frontend/src/pages/Ventas.tsx
+// frontend/src/pages/Ventas.tsx - CORREGIDO
 import { useState, useEffect } from 'react';
 import { ventaService } from '../services/ventaService';
 import { Venta, DetalleVenta } from '../types';
@@ -111,7 +111,7 @@ export default function Ventas() {
             e.stopPropagation();
             handleVerDetalle(venta);
           }}
-          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+          className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
           title="Ver Detalle"
         >
           <Eye className="w-4 h-4" />
@@ -136,29 +136,29 @@ export default function Ventas() {
 
       {/* Estadísticas Rápidas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="border-l-4 border-l-blue-600">
+        <Card className="border-l-4 border-l-blue-500 dark:border-l-blue-400">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Ventas</p>
-              <p className="text-2xl font-bold text-gray-900">{totalVentas}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Total Ventas</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalVentas}</p>
             </div>
           </div>
         </Card>
-        
-        <Card className="border-l-4 border-l-green-600">
+
+        <Card className="border-l-4 border-l-green-500 dark:border-l-green-400">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Monto Total</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(montoTotal)}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Monto Total</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(montoTotal)}</p>
             </div>
           </div>
         </Card>
-        
-        <Card className="border-l-4 border-l-purple-600">
+
+        <Card className="border-l-4 border-l-purple-500 dark:border-l-purple-400">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Productos Vendidos</p>
-              <p className="text-2xl font-bold text-gray-900">{totalProductos}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Productos Vendidos</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalProductos}</p>
             </div>
           </div>
         </Card>
@@ -168,7 +168,7 @@ export default function Ventas() {
       <Card>
         <div className="flex items-end gap-4">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Inicio</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha Inicio</label>
             <input
               type="date"
               value={fechaInicio}
@@ -177,7 +177,7 @@ export default function Ventas() {
             />
           </div>
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Fin</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha Fin</label>
             <input
               type="date"
               value={fechaFin}
@@ -202,7 +202,7 @@ export default function Ventas() {
         <Table data={ventas} columns={columns} emptyMessage="No hay ventas registradas" />
       </Card>
 
-      {/* Modal Detalle */}
+      {/* Modal Detalle - CORREGIDO */}
       <Modal
         isOpen={detalleModalOpen}
         onClose={() => setDetalleModalOpen(false)}
@@ -211,53 +211,60 @@ export default function Ventas() {
       >
         {ventaSeleccionada && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+            {/* Información de la venta - CORREGIDO */}
+            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
               <div>
-                <p className="text-sm text-gray-600">Fecha</p>
-                <p className="font-medium">{formatDateTime(ventaSeleccionada.FechaVenta!)}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Fecha</p>
+                <p className="font-medium text-gray-900 dark:text-white">{formatDateTime(ventaSeleccionada.FechaVenta!)}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Cajero</p>
-                <p className="font-medium">{ventaSeleccionada.Usuario?.Nombre}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Cajero</p>
+                <p className="font-medium text-gray-900 dark:text-white">{ventaSeleccionada.Usuario?.Nombre}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Método de Pago</p>
-                <p className="font-medium">{ventaSeleccionada.MetodoPago}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Método de Pago</p>
+                <p className="font-medium text-gray-900 dark:text-white">{ventaSeleccionada.MetodoPago}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Estado</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Estado</p>
                 <Badge variant={ventaSeleccionada.Estado ? 'success' : 'danger'}>
                   {ventaSeleccionada.Estado ? 'Activo' : 'Anulado'}
                 </Badge>
               </div>
             </div>
 
+            {/* Comentario */}
             {ventaSeleccionada.Comentario && (
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-gray-600">Comentario</p>
-                <p className="font-medium">{ventaSeleccionada.Comentario}</p>
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Comentario</p>
+                <p className="font-medium text-gray-900 dark:text-white">{ventaSeleccionada.Comentario}</p>
               </div>
             )}
 
+            {/* Lista de Productos - CORREGIDO */}
             <div>
-              <h3 className="font-semibold mb-3">Productos</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Productos</h3>
               <div className="space-y-2">
                 {detalleVenta.map((detalle, index) => (
-                  <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <div 
+                    key={index} 
+                    className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600"
+                  >
                     <div className="flex-1">
-                      <p className="font-medium">{detalle.Producto?.Nombre}</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="font-medium text-gray-900 dark:text-white">{detalle.Producto?.Nombre}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         {detalle.Cantidad} x {formatCurrency(detalle.PrecioUnitario)}
                       </p>
                     </div>
-                    <p className="font-bold">{formatCurrency(detalle.Subtotal)}</p>
+                    <p className="font-bold text-gray-900 dark:text-white">{formatCurrency(detalle.Subtotal)}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-200">
-              <div className="flex justify-between text-xl font-bold text-primary-600">
+            {/* Total */}
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex justify-between text-xl font-bold text-primary-600 dark:text-primary-400">
                 <span>Total:</span>
                 <span>{formatCurrency(ventaSeleccionada.Total)}</span>
               </div>

@@ -49,7 +49,6 @@ export default function Dashboard() {
         fechaInicio.toISOString(),
         fechaFin.toISOString()
       );
-
       const productosData = await reporteService.obtenerReporteProductos();
       const stockBajo = await productoService.obtenerStockBajo();
 
@@ -62,7 +61,6 @@ export default function Dashboard() {
         productosStockBajo: productosData.estadisticas.productosStockBajo,
         valorInventario: productosData.estadisticas.valorInventario
       });
-
       setProductosStockBajo(stockBajo);
     } catch (error: any) {
       toast.error('Error al cargar datos del dashboard');
@@ -90,10 +88,10 @@ export default function Dashboard() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Ventas del mes */}
-        <Card className="border-l-4 border-l-primary-600">
+        <Card className="border-l-4 border-l-primary-600 dark:border-l-primary-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Ventas del Mes</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Ventas del Mes</p>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {formatNumber(stats?.totalVentas || 0)}
               </h3>
@@ -108,10 +106,10 @@ export default function Dashboard() {
         </Card>
 
         {/* Ingresos */}
-        <Card className="border-l-4 border-l-green-600">
+        <Card className="border-l-4 border-l-green-500 dark:border-l-green-400">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Ingresos Totales</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Ingresos Totales</p>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {formatCurrency(stats?.montoTotal || 0)}
               </h3>
@@ -126,10 +124,10 @@ export default function Dashboard() {
         </Card>
 
         {/* Productos Activos */}
-        <Card className="border-l-4 border-l-blue-600">
+        <Card className="border-l-4 border-l-blue-500 dark:border-l-blue-400">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Productos Activos</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Productos Activos</p>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {formatNumber(stats?.productosActivos || 0)}
               </h3>
@@ -144,10 +142,10 @@ export default function Dashboard() {
         </Card>
 
         {/* Stock Bajo */}
-        <Card className="border-l-4 border-l-red-600">
+        <Card className="border-l-4 border-l-red-500 dark:border-l-red-400">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Stock Bajo</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Stock Bajo</p>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {formatNumber(stats?.productosStockBajo || 0)}
               </h3>
@@ -251,7 +249,7 @@ export default function Dashboard() {
       {/* Info del Sistema */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
-          <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
             <Calendar className="w-5 h-5" />
             <div>
               <p className="text-sm">Última actualización</p>
@@ -268,7 +266,7 @@ export default function Dashboard() {
         </Card>
 
         <Card>
-          <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
             <Users className="w-5 h-5" />
             <div>
               <p className="text-sm">Tu rol</p>
