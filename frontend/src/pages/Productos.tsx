@@ -234,8 +234,8 @@ export default function Productos() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Productos</h1>
-          <p className="text-gray-600 mt-2">Gestiona tu inventario de productos</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Productos</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Gestiona tu inventario de productos</p>
         </div>
         <Button icon={<Plus className="w-5 h-5" />} onClick={() => handleOpenModal()}>
           Nuevo Producto

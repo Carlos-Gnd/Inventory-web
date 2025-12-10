@@ -41,7 +41,6 @@ export default function Dashboard() {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      // Obtener estadísticas de ventas (último mes)
       const fechaFin = new Date();
       const fechaInicio = new Date();
       fechaInicio.setMonth(fechaInicio.getMonth() - 1);
@@ -51,10 +50,7 @@ export default function Dashboard() {
         fechaFin.toISOString()
       );
 
-      // Obtener estadísticas de productos
       const productosData = await reporteService.obtenerReporteProductos();
-
-      // Obtener productos con stock bajo
       const stockBajo = await productoService.obtenerStockBajo();
 
       setStats({
@@ -83,10 +79,10 @@ export default function Dashboard() {
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           ¡Bienvenido, {user?.Nombre}! 👋
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
           Resumen de tu inventario y ventas
         </p>
       </div>
@@ -97,16 +93,16 @@ export default function Dashboard() {
         <Card className="border-l-4 border-l-primary-600">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Ventas del Mes</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-2">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Ventas del Mes</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {formatNumber(stats?.totalVentas || 0)}
               </h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 {formatNumber(stats?.totalProductos || 0)} productos vendidos
               </p>
             </div>
-            <div className="p-3 bg-primary-100 rounded-full">
-              <ShoppingCart className="w-6 h-6 text-primary-600" />
+            <div className="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-full">
+              <ShoppingCart className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
           </div>
         </Card>
@@ -115,16 +111,16 @@ export default function Dashboard() {
         <Card className="border-l-4 border-l-green-600">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Ingresos Totales</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-2">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Ingresos Totales</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {formatCurrency(stats?.montoTotal || 0)}
               </h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Promedio: {formatCurrency(stats?.promedioVenta || 0)}
               </p>
             </div>
-            <div className="p-3 bg-green-100 rounded-full">
-              <DollarSign className="w-6 h-6 text-green-600" />
+            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
+              <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
           </div>
         </Card>
@@ -133,16 +129,16 @@ export default function Dashboard() {
         <Card className="border-l-4 border-l-blue-600">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Productos Activos</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-2">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Productos Activos</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {formatNumber(stats?.productosActivos || 0)}
               </h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Valor: {formatCurrency(stats?.valorInventario || 0)}
               </p>
             </div>
-            <div className="p-3 bg-blue-100 rounded-full">
-              <Package className="w-6 h-6 text-blue-600" />
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+              <Package className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
         </Card>
@@ -151,16 +147,16 @@ export default function Dashboard() {
         <Card className="border-l-4 border-l-red-600">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Stock Bajo</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-2">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Stock Bajo</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 {formatNumber(stats?.productosStockBajo || 0)}
               </h3>
-              <p className="text-sm text-red-600 mt-1 font-medium">
+              <p className="text-sm text-red-600 dark:text-red-400 mt-1 font-medium">
                 Requieren atención
               </p>
             </div>
-            <div className="p-3 bg-red-100 rounded-full">
-              <AlertTriangle className="w-6 h-6 text-red-600" />
+            <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
+              <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
             </div>
           </div>
         </Card>
@@ -176,27 +172,27 @@ export default function Dashboard() {
             {productosStockBajo.slice(0, 5).map((producto) => (
               <div
                 key={producto.IdProducto}
-                className="flex items-center justify-between p-4 bg-red-50 rounded-lg border border-red-200"
+                className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800"
               >
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900">{producto.Nombre}</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-medium text-gray-900 dark:text-white">{producto.Nombre}</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Categoría: {producto.Categoria?.Nombre || 'N/A'}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600">Stock Actual</p>
-                  <p className="text-2xl font-bold text-red-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Stock Actual</p>
+                  <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                     {producto.Stock}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     Mínimo: {producto.StockMinimo}
                   </p>
                 </div>
               </div>
             ))}
             {productosStockBajo.length > 5 && (
-              <p className="text-sm text-gray-500 text-center pt-2">
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center pt-2">
                 Y {productosStockBajo.length - 5} productos más con stock bajo
               </p>
             )}
@@ -209,14 +205,14 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <a
             href="/registrar-ventas"
-            className="flex items-center gap-3 p-4 bg-gradient-to-r from-primary-50 to-purple-50 rounded-lg border border-primary-200 hover:shadow-md transition-all group"
+            className="flex items-center gap-3 p-4 bg-gradient-to-r from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20 rounded-lg border border-primary-200 dark:border-primary-800 hover:shadow-md transition-all group"
           >
             <div className="p-2 bg-primary-600 rounded-lg group-hover:scale-110 transition-transform">
               <ShoppingCart className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h4 className="font-medium text-gray-900">Registrar Venta</h4>
-              <p className="text-xs text-gray-600">Punto de venta</p>
+              <h4 className="font-medium text-gray-900 dark:text-white">Registrar Venta</h4>
+              <p className="text-xs text-gray-600 dark:text-gray-400">Punto de venta</p>
             </div>
           </a>
 
@@ -224,27 +220,27 @@ export default function Dashboard() {
             <>
               <a
                 href="/productos"
-                className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200 hover:shadow-md transition-all group"
+                className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg border border-blue-200 dark:border-blue-800 hover:shadow-md transition-all group"
               >
                 <div className="p-2 bg-blue-600 rounded-lg group-hover:scale-110 transition-transform">
                   <Package className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-900">Productos</h4>
-                  <p className="text-xs text-gray-600">Gestionar inventario</p>
+                  <h4 className="font-medium text-gray-900 dark:text-white">Productos</h4>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Gestionar inventario</p>
                 </div>
               </a>
 
               <a
                 href="/reportes"
-                className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200 hover:shadow-md transition-all group"
+                className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800 hover:shadow-md transition-all group"
               >
                 <div className="p-2 bg-green-600 rounded-lg group-hover:scale-110 transition-transform">
                   <TrendingUp className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-900">Reportes</h4>
-                  <p className="text-xs text-gray-600">Exportar datos</p>
+                  <h4 className="font-medium text-gray-900 dark:text-white">Reportes</h4>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Exportar datos</p>
                 </div>
               </a>
             </>
@@ -255,11 +251,11 @@ export default function Dashboard() {
       {/* Info del Sistema */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
-          <div className="flex items-center gap-3 text-gray-600">
+          <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
             <Calendar className="w-5 h-5" />
             <div>
               <p className="text-sm">Última actualización</p>
-              <p className="font-medium text-gray-900">
+              <p className="font-medium text-gray-900 dark:text-white">
                 {new Date().toLocaleDateString('es-SV', {
                   weekday: 'long',
                   year: 'numeric',
@@ -272,7 +268,7 @@ export default function Dashboard() {
         </Card>
 
         <Card>
-          <div className="flex items-center gap-3 text-gray-600">
+          <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
             <Users className="w-5 h-5" />
             <div>
               <p className="text-sm">Tu rol</p>

@@ -1,6 +1,7 @@
 // frontend/src/App.tsx
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/authStore'
+import { ThemeProvider } from './contexts/ThemeContext'
 
 // Pages
 import Login from './pages/Login'
@@ -12,6 +13,7 @@ import Ventas from './pages/Ventas'
 import VentasPropias from './pages/VentasPropias'
 import RegistrarVentas from './pages/RegistrarVentas'
 import Reportes from './pages/Reportes'
+import HistorialSesiones from './pages/HistorialSesiones'
 
 // Layout
 import Layout from './components/layout/Layout'
@@ -35,68 +37,80 @@ function App() {
   const { isAuthenticated } = useAuthStore()
 
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route 
-        path="/login" 
-        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} 
-      />
+    <ThemeProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+        <Routes>
+          {/* Public Routes */}
+          <Route
+            path="/login"
+            element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}
+          />
 
-      {/* Protected Routes */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Layout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        
-        {/* Admin Only Routes */}
-        <Route 
-          path="usuarios" 
-          element={
-            <ProtectedRoute adminOnly>
-              <Usuarios />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="categorias" 
-          element={
-            <ProtectedRoute adminOnly>
-              <Categorias />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="productos" 
-          element={
-            <ProtectedRoute adminOnly>
-              <Productos />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="ventas" 
-          element={
-            <ProtectedRoute adminOnly>
-              <Ventas />
-            </ProtectedRoute>
-          } 
-        />
-        
-        {/* Shared Routes (Admin & Cajero) */}
-        <Route path="registrar-ventas" element={<RegistrarVentas />} />
-        <Route path="ventas-propias" element={<VentasPropias />} />
-        <Route path="reportes" element={<Reportes />} />
-      </Route>
+          {/* Protected Routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            
+            {/* Admin Only Routes */}
+            <Route
+              path="usuarios"
+              element={
+                <ProtectedRoute adminOnly>
+                  <Usuarios />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="historial-sesiones" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <HistorialSesiones />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="categorias"
+              element={
+                <ProtectedRoute adminOnly>
+                  <Categorias />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="productos"
+              element={
+                <ProtectedRoute adminOnly>
+                  <Productos />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="ventas"
+              element={
+                <ProtectedRoute adminOnly>
+                  <Ventas />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Shared Routes (Admin & Cajero) */}
+            <Route path="registrar-ventas" element={<RegistrarVentas />} />
+            <Route path="ventas-propias" element={<VentasPropias />} />
+            <Route path="reportes" element={<Reportes />} />
+          </Route>
 
-      {/* 404 */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-    </Routes>
+          {/* 404 */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </div>
+    </ThemeProvider>
   )
 }
 

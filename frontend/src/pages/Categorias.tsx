@@ -205,8 +205,8 @@ export default function Categorias() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Categorías</h1>
-          <p className="text-gray-600 mt-2">Organiza tus productos por categorías</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Categorías</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Organiza tus productos por categorías</p>
         </div>
         <Button icon={<Plus className="w-5 h-5" />} onClick={() => handleOpenModal()}>
           Nueva Categoría

@@ -250,8 +250,8 @@ export default function Usuarios() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Usuarios</h1>
-          <p className="text-gray-600 mt-2">Gestiona los usuarios del sistema</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Usuarios</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Gestiona los usuarios del sistema</p>
         </div>
         <Button icon={<Plus className="w-5 h-5" />} onClick={() => handleOpenModal()}>
           Nuevo Usuario

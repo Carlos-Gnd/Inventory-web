@@ -81,6 +81,22 @@ CREATE TABLE IF NOT EXISTS Reportes (
     FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario)
 );
 
+-- Tabla HistorialSesiones
+CREATE TABLE IF NOT EXISTS HistorialSesiones (
+    IdSesion INT AUTO_INCREMENT PRIMARY KEY,
+    IdUsuario INT NOT NULL,
+    FechaHora DATETIME DEFAULT NOW(),
+    DireccionIP VARCHAR(45),
+    Navegador VARCHAR(200),
+    Dispositivo VARCHAR(100),
+    SistemaOperativo VARCHAR(100),
+    Exitoso BOOLEAN DEFAULT TRUE,
+    MotivoFallo VARCHAR(255),
+    FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario),
+    INDEX idx_usuario_fecha (IdUsuario, FechaHora DESC),
+    INDEX idx_fecha (FechaHora DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ========================================
 -- DATOS INICIALES
 -- ========================================
@@ -175,6 +191,38 @@ BEGIN
         p_Usuario,
         SHA2(p_Clave, 256),
         p_IdRol
+    );
+END$$
+
+-- Stored Procedure para registrar sesión
+
+CREATE PROCEDURE sp_RegistrarSesion(
+    IN p_IdUsuario INT,
+    IN p_DireccionIP VARCHAR(45),
+    IN p_Navegador VARCHAR(200),
+    IN p_Dispositivo VARCHAR(100),
+    IN p_SistemaOperativo VARCHAR(100),
+    IN p_Exitoso BOOLEAN,
+    IN p_MotivoFallo VARCHAR(255)
+)
+BEGIN
+    INSERT INTO HistorialSesiones (
+        IdUsuario, 
+        DireccionIP, 
+        Navegador, 
+        Dispositivo, 
+        SistemaOperativo,
+        Exitoso, 
+        MotivoFallo
+    )
+    VALUES (
+        p_IdUsuario,
+        p_DireccionIP,
+        p_Navegador,
+        p_Dispositivo,
+        p_SistemaOperativo,
+        p_Exitoso,
+        p_MotivoFallo
     );
 END$$
 

@@ -109,3 +109,24 @@ export interface EstadisticasProductos {
   productosStockBajo: number;
   valorInventario: number;
 }
+
+export interface HistorialSesion {
+  IdSesion?: number;
+  IdUsuario: number;
+  FechaHora?: string;
+  DireccionIP: string;
+  Navegador: string;
+  Dispositivo: string;
+  SistemaOperativo: string;
+  Exitoso: boolean;
+  MotivoFallo?: string;
+  Usuario?: Usuario;
+}
+
+export interface EstadisticasSesiones {
+  TotalSesiones: number;
+  SesionesExitosas: number;
+  SesionesFallidas: number;
+  IPsUnicas: number;
+  UltimoAcceso: string;
+}

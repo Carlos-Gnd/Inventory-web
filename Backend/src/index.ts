@@ -10,6 +10,7 @@ import categoriaRoutes from './routes/categoria.routes';
 import productoRoutes from './routes/producto.routes';
 import ventaRoutes from './routes/venta.routes';
 import reporteRoutes from './routes/reporte.routes';
+import historialSesionRoutes from './routes/historialSesion.routes';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use('/api/categorias', categoriaRoutes);
 app.use('/api/productos', productoRoutes);
 app.use('/api/ventas', ventaRoutes);
 app.use('/api/reportes', reporteRoutes);
+app.use('/api/historial-sesiones', historialSesionRoutes);
 
 // Error handling
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

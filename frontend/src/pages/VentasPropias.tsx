@@ -173,8 +173,8 @@ export default function VentasPropias() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Mis Ventas</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Mis Ventas</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
           Historial de tus ventas personales - {user?.Nombre} {user?.Apellido}
         </p>
       </div>

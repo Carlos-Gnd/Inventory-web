@@ -130,8 +130,8 @@ export default function Ventas() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Ventas</h1>
-        <p className="text-gray-600 mt-2">Historial completo de ventas</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Ventas</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">Historial completo de ventas</p>
       </div>
 
       {/* Estadísticas Rápidas */}

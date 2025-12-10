@@ -78,3 +78,16 @@ export interface LoginResponse {
   usuario: Omit<Usuario, 'ClaveHash'>;
   token: string;
 }
+
+export interface HistorialSesion {
+  IdSesion?: number;
+  IdUsuario: number;
+  FechaHora?: Date;
+  DireccionIP: string;
+  Navegador: string;
+  Dispositivo: string;
+  SistemaOperativo: string;
+  Exitoso: boolean;
+  MotivoFallo?: string;
+  Usuario?: Usuario;
+}
