@@ -1,3 +1,5 @@
+// Backend/src/models/index.ts
+
 export interface Rol {
   IdRol: number;
   RolNombre: string;
@@ -13,12 +15,19 @@ export interface Usuario {
   Activo: boolean;
   FechaRegistro?: Date;
   Rol?: Rol;
+  
+  // CAMPOS PARA PERFIL
+  FotoPerfil?: string;      // Base64 o URL
+  Telefono?: string;
+  Email?: string;
+  Direccion?: string;
+  FechaNacimiento?: Date;
 }
 
 export interface Categoria {
   IdCategoria?: number;
   Nombre: string;
-  Descripcion?: string;  // Cambiado a opcional
+  Descripcion?: string;
 }
 
 export interface Producto {
@@ -28,7 +37,7 @@ export interface Producto {
   Precio: number;
   Stock: number;
   Estado: boolean;
-  Descripcion?: string;  // Cambiado a opcional
+  Descripcion?: string;
   StockMinimo: number;
   FechaRegistro?: Date;
   EsProductoFinal: boolean;
@@ -90,4 +99,22 @@ export interface HistorialSesion {
   Exitoso: boolean;
   MotivoFallo?: string;
   Usuario?: Usuario;
+}
+
+// Request para actualizar perfil
+export interface ActualizarPerfilRequest {
+  Nombre?: string;
+  Apellido?: string;
+  FotoPerfil?: string;
+  Telefono?: string;
+  Email?: string;
+  Direccion?: string;
+  FechaNacimiento?: string;
+}
+
+// Tipos adicionales para el frontend
+export interface PerfilUsuario extends Omit<Usuario, 'ClaveHash'> {}
+
+export interface ActualizarFotoRequest {
+  FotoPerfil: string;
 }

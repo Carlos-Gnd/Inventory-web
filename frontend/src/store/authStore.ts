@@ -1,4 +1,5 @@
 // frontend/src/store/authStore.ts
+
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { Usuario } from '../types'
@@ -8,7 +9,7 @@ interface AuthState {
   user: Usuario | null
   token: string | null
   isAuthenticated: boolean
-  
+ 
   // Actions
   login: (usuario: string, clave: string) => Promise<void>
   logout: () => void
@@ -25,7 +26,7 @@ export const useAuthStore = create<AuthState>()(
       login: async (usuario: string, clave: string) => {
         try {
           const response = await authService.login({ usuario, clave })
-          
+         
           set({
             user: response.usuario,
             token: response.token,
@@ -45,7 +46,11 @@ export const useAuthStore = create<AuthState>()(
         })
       },
 
+      // Actualizar usuario sin hacer logout
       setUser: (user: Usuario) => {
+        // También actualizar en localStorage para persistencia
+        localStorage.setItem('user', JSON.stringify(user))
+        
         set({ user })
       }
     }),

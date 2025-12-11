@@ -14,6 +14,7 @@ import VentasPropias from './pages/VentasPropias'
 import RegistrarVentas from './pages/RegistrarVentas'
 import Reportes from './pages/Reportes'
 import HistorialSesiones from './pages/HistorialSesiones'
+import MiPerfil from './pages/MiPerfil'
 
 // Layout
 import Layout from './components/layout/Layout'
@@ -47,6 +48,8 @@ function App() {
           />
 
           {/* Protected Routes */}
+
+          <Route path="mi-perfil" element={<MiPerfil />} />
           <Route
             path="/"
             element={
@@ -55,6 +58,7 @@ function App() {
               </ProtectedRoute>
             }
           >
+          
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             

@@ -1,11 +1,12 @@
 // frontend/src/types/index.ts
+
 // Rol
 export interface Rol {
   IdRol: number;
   RolNombre: string;
 }
 
-// Usuario
+// Usuario - CON NUEVOS CAMPOS PARA PERFIL
 export interface Usuario {
   IdUsuario?: number;
   Nombre: string;
@@ -16,6 +17,13 @@ export interface Usuario {
   Activo: boolean;
   FechaRegistro?: string;
   Rol?: Rol;
+  
+  // CAMPOS DE PERFIL
+  FotoPerfil?: string;
+  Telefono?: string;
+  Email?: string;
+  Direccion?: string;
+  FechaNacimiento?: string;
 }
 
 // Categoría
@@ -129,4 +137,19 @@ export interface EstadisticasSesiones {
   SesionesFallidas: number;
   IPsUnicas: number;
   UltimoAcceso: string;
+}
+
+// NUEVOS TIPOS PARA PERFIL
+export interface ActualizarPerfilRequest {
+  Nombre?: string;
+  Apellido?: string;
+  FotoPerfil?: string;
+  Telefono?: string;
+  Email?: string;
+  Direccion?: string;
+  FechaNacimiento?: string;
+}
+
+export interface ActualizarFotoRequest {
+  FotoPerfil: string;
 }

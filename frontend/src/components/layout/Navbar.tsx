@@ -1,51 +1,53 @@
-// frontend/src/components/layout/Navbar.tsx
-import { Menu, Bell, User, LogOut, Package } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../../store/authStore'
-import { useState, useRef, useEffect } from 'react'
-import toast from 'react-hot-toast'
-import ThemeToggle from '../common/ThemeToggle'
+// frontend/src/components/layout/Navbar.tsx - ACTUALIZADO
+
+import { Menu, Bell, LogOut, Package, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore';
+import { useState, useRef, useEffect } from 'react';
+import toast from 'react-hot-toast';
+import ThemeToggle from '../common/ThemeToggle';
+import Avatar from '../common/Avatar';
 
 interface NavbarProps {
-  onMenuClick: () => void
+  onMenuClick: () => void;
 }
 
 export default function Navbar({ onMenuClick }: NavbarProps) {
-  const navigate = useNavigate()
-  const { user, logout } = useAuthStore()
-  const [showUserMenu, setShowUserMenu] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowUserMenu(false)
+        setShowUserMenu(false);
       }
-    }
+    };
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
-    logout()
-    toast.success('Sesión cerrada correctamente')
-    navigate('/login')
-  }
+    logout();
+    toast.success('Sesión cerrada correctamente');
+    navigate('/login');
+  };
 
   const getRoleBadge = () => {
-    const role = user?.IdRol === 1 ? 'Administrador' : 'Cajero'
+    const role = user?.IdRol === 1 ? 'Administrador' : 'Cajero';
     const colorClass = user?.IdRol === 1
       ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
-      : 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+      : 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
     
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorClass}`}>
         {role}
       </span>
-    )
-  }
+    );
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-50 transition-colors duration-200">
@@ -87,9 +89,14 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
-              </div>
+              {/* Avatar actualizado */}
+              <Avatar
+                src={user?.FotoPerfil}
+                nombre={user?.Nombre}
+                apellido={user?.Apellido}
+                size="md"
+              />
+              
               <div className="text-left hidden md:block">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
                   {user?.Nombre} {user?.Apellido}
@@ -100,15 +107,44 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
 
             {/* Dropdown */}
             {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 animate-fade-in">
+              <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 animate-fade-in">
                 <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    {user?.Nombre} {user?.Apellido}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{user?.UsuarioNombre}</p>
+                  <div className="flex items-center gap-3 mb-3">
+                    <Avatar
+                      src={user?.FotoPerfil}
+                      nombre={user?.Nombre}
+                      apellido={user?.Apellido}
+                      size="lg"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {user?.Nombre} {user?.Apellido}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        {user?.UsuarioNombre}
+                      </p>
+                      {user?.Email && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {user.Email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                   {getRoleBadge()}
                 </div>
+
                 <div className="py-2">
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      navigate('/mi-perfil');
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                  >
+                    <Settings className="w-4 h-4" />
+                    Mi Perfil
+                  </button>
+                  
                   <button
                     onClick={handleLogout}
                     className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 transition-colors"
@@ -123,5 +159,5 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
         </div>
       </div>
     </nav>
-  )
+  );
 }

@@ -11,6 +11,7 @@ import productoRoutes from './routes/producto.routes';
 import ventaRoutes from './routes/venta.routes';
 import reporteRoutes from './routes/reporte.routes';
 import historialSesionRoutes from './routes/historialSesion.routes';
+import perfilRoutes from './routes/perfil.routes';
 
 dotenv.config();
 
@@ -21,8 +22,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173'
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' })); // Aumentar límite para imágenes
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
 
 // ENDPOINT DE SALUD
 app.get('/api/health', (_req, res) => {
@@ -41,6 +43,8 @@ app.use('/api/productos', productoRoutes);
 app.use('/api/ventas', ventaRoutes);
 app.use('/api/reportes', reporteRoutes);
 app.use('/api/historial-sesiones', historialSesionRoutes);
+app.use('/api/perfil', perfilRoutes);
+
 
 // Error handling
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
