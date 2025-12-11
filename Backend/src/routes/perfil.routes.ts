@@ -1,15 +1,17 @@
-// Backend/src/routes/perfil.routes.ts - NUEVO ARCHIVO
-
+// Backend/src/routes/perfil.routes.ts - MEJORADO
 import { Router, Response } from 'express';
 import { UsuarioRepository } from '../repositories/usuario.repository';
-import { authMiddleware, AuthRequest } from '../middleware/auth.middleware';
+import { authMiddleware, AuthRequest, isAdmin } from '../middleware/auth.middleware';
 import { body, validationResult } from 'express-validator';
+import { hashPasswordSHA256 } from '../utils/auth';
 
 const router = Router();
 const usuarioRepo = new UsuarioRepository();
 
 // Todas las rutas requieren autenticación
 router.use(authMiddleware);
+
+// ==================== RUTAS DE USUARIO COMÚN ====================
 
 // Obtener perfil del usuario actual
 router.get('/mi-perfil', async (req: AuthRequest, res: Response): Promise<void> => {
@@ -27,9 +29,7 @@ router.get('/mi-perfil', async (req: AuthRequest, res: Response): Promise<void> 
       return;
     }
 
-    // Remover datos sensibles
     const { ClaveHash, ...usuarioSinClave } = usuario;
-    
     res.json(usuarioSinClave);
   } catch (error: any) {
     console.error('Error al obtener perfil:', error);
@@ -54,6 +54,8 @@ router.put(
     body('Telefono')
       .optional()
       .trim()
+      .matches(/^[0-9\-\s\+\(\)]*$/)
+      .withMessage('Teléfono inválido')
       .isLength({ max: 20 })
       .withMessage('Teléfono no puede exceder 20 caracteres'),
     body('Email')
@@ -75,10 +77,8 @@ router.put(
     body('FotoPerfil')
       .optional()
       .custom((value) => {
-        // Validar que sea base64 o una URL válida
         if (!value) return true;
         
-        // Si empieza con data:image, validar base64
         if (value.startsWith('data:image')) {
           const sizeInBytes = (value.length * 3) / 4;
           const sizeInMB = sizeInBytes / (1024 * 1024);
@@ -88,7 +88,6 @@ router.put(
           return true;
         }
         
-        // Si es URL, validar formato
         try {
           new URL(value);
           return true;
@@ -112,7 +111,6 @@ router.put(
       }
 
       const datos = req.body;
-
       const actualizado = await usuarioRepo.actualizarPerfil(idUsuario, datos);
 
       if (!actualizado) {
@@ -120,7 +118,6 @@ router.put(
         return;
       }
 
-      // Obtener usuario actualizado
       const usuarioActualizado = await usuarioRepo.obtenerPorId(idUsuario);
       
       if (usuarioActualizado) {
@@ -139,7 +136,63 @@ router.put(
   }
 );
 
-// Actualizar solo la foto de perfil
+// Cambiar MI contraseña (usuario propio)
+router.put(
+  '/mi-perfil/cambiar-clave',
+  [
+    body('claveActual')
+      .notEmpty()
+      .withMessage('Contraseña actual es requerida'),
+    body('claveNueva')
+      .isLength({ min: 6 })
+      .withMessage('La nueva contraseña debe tener al menos 6 caracteres')
+  ],
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+
+    try {
+      const idUsuario = req.user?.userId;
+      if (!idUsuario) {
+        res.status(401).json({ error: 'Usuario no autenticado' });
+        return;
+      }
+
+      const { claveActual, claveNueva } = req.body;
+
+      // Verificar contraseña actual
+      const usuario = await usuarioRepo.obtenerPorId(idUsuario);
+      if (!usuario) {
+        res.status(404).json({ error: 'Usuario no encontrado' });
+        return;
+      }
+
+      const claveActualHash = hashPasswordSHA256(claveActual);
+      if (usuario.ClaveHash !== claveActualHash) {
+        res.status(401).json({ error: 'Contraseña actual incorrecta' });
+        return;
+      }
+
+      // Actualizar contraseña
+      const nuevaClaveHash = hashPasswordSHA256(claveNueva);
+      const actualizado = await usuarioRepo.cambiarClave(idUsuario, nuevaClaveHash);
+
+      if (actualizado) {
+        res.json({ message: 'Contraseña actualizada exitosamente' });
+      } else {
+        res.status(500).json({ error: 'Error al actualizar contraseña' });
+      }
+    } catch (error: any) {
+      console.error('Error al cambiar contraseña:', error);
+      res.status(500).json({ error: 'Error al cambiar contraseña' });
+    }
+  }
+);
+
+// Actualizar solo la foto
 router.put(
   '/mi-perfil/foto',
   [
@@ -173,7 +226,6 @@ router.put(
       }
 
       const { FotoPerfil } = req.body;
-
       const actualizado = await usuarioRepo.actualizarPerfil(idUsuario, { FotoPerfil });
 
       if (!actualizado) {
@@ -214,5 +266,107 @@ router.delete('/mi-perfil/foto', async (req: AuthRequest, res: Response): Promis
     res.status(500).json({ error: 'Error al eliminar foto' });
   }
 });
+
+// ==================== RUTAS ADMIN PARA GESTIÓN DE USUARIOS ====================
+
+// Obtener perfil de otro usuario (solo admin)
+router.get('/usuarios/:id', isAdmin, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const idUsuario = parseInt(req.params.id);
+    const usuario = await usuarioRepo.obtenerPorId(idUsuario);
+    
+    if (!usuario) {
+      res.status(404).json({ error: 'Usuario no encontrado' });
+      return;
+    }
+
+    const { ClaveHash, ...usuarioSinClave } = usuario;
+    res.json(usuarioSinClave);
+  } catch (error: any) {
+    console.error('Error al obtener usuario:', error);
+    res.status(500).json({ error: 'Error al obtener usuario' });
+  }
+});
+
+// Actualizar perfil de otro usuario (solo admin)
+router.put(
+  '/usuarios/:id',
+  isAdmin,
+  [
+    body('Nombre').optional().trim().isLength({ min: 1, max: 100 }),
+    body('Apellido').optional().trim().isLength({ min: 1, max: 100 }),
+    body('Email').optional().trim().isEmail(),
+    body('Telefono').optional().trim().matches(/^[0-9\-\s\+\(\)]*$/),
+    body('Direccion').optional().trim().isLength({ max: 255 }),
+    body('FechaNacimiento').optional().isISO8601()
+  ],
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+
+    try {
+      const idUsuario = parseInt(req.params.id);
+      const datos = req.body;
+      
+      const actualizado = await usuarioRepo.actualizarPerfil(idUsuario, datos);
+
+      if (!actualizado) {
+        res.status(404).json({ error: 'Usuario no encontrado' });
+        return;
+      }
+
+      const usuarioActualizado = await usuarioRepo.obtenerPorId(idUsuario);
+      
+      if (usuarioActualizado) {
+        const { ClaveHash, ...usuarioSinClave } = usuarioActualizado;
+        res.json({
+          message: 'Usuario actualizado exitosamente',
+          usuario: usuarioSinClave
+        });
+      }
+    } catch (error: any) {
+      console.error('Error al actualizar usuario:', error);
+      res.status(500).json({ error: 'Error al actualizar usuario' });
+    }
+  }
+);
+
+// Cambiar contraseña de otro usuario (solo admin)
+router.put(
+  '/usuarios/:id/cambiar-clave',
+  isAdmin,
+  [
+    body('claveNueva')
+      .isLength({ min: 6 })
+      .withMessage('La contraseña debe tener al menos 6 caracteres')
+  ],
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+
+    try {
+      const idUsuario = parseInt(req.params.id);
+      const { claveNueva } = req.body;
+
+      const nuevaClaveHash = hashPasswordSHA256(claveNueva);
+      const actualizado = await usuarioRepo.cambiarClave(idUsuario, nuevaClaveHash);
+
+      if (actualizado) {
+        res.json({ message: 'Contraseña actualizada exitosamente' });
+      } else {
+        res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+    } catch (error: any) {
+      console.error('Error al cambiar contraseña:', error);
+      res.status(500).json({ error: 'Error al cambiar contraseña' });
+    }
+  }
+);
 
 export default router;

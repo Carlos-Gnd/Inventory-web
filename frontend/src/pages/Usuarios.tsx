@@ -1,7 +1,7 @@
-// frontend/src/pages/Usuarios.tsx
+// frontend/src/pages/Usuarios.tsx - MEJORADO
 import { useState, useEffect } from 'react';
 import { usuarioService } from '../services/usuarioService';
-import { Usuario, Rol } from '../types';
+import { Usuario } from '../types';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
@@ -10,13 +10,15 @@ import Table from '../components/common/Table';
 import SearchBar from '../components/common/SearchBar';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Badge from '../components/common/Badge';
-import { Plus, Edit, Trash2, User, Lock } from 'lucide-react';
+import Avatar from '../components/common/Avatar';
+import ModalEditarUsuario from '../components/features/usuarios/ModalEditarUsuario';
+import { Plus, Edit, Trash2, User, Lock, UserCog } from 'lucide-react';
 import { useDebounce } from '../hooks/useDebounce';
 import toast from 'react-hot-toast';
 import { ROLES } from '../utils/constants';
 import { isNotEmpty, minLength } from '../utils/validators';
 
-const ROLES_OPTIONS: Rol[] = [
+const ROLES_OPTIONS = [
   { IdRol: 1, RolNombre: 'Administrador' },
   { IdRol: 2, RolNombre: 'Cajero' }
 ];
@@ -32,6 +34,7 @@ export default function Usuarios() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedUsuario, setSelectedUsuario] = useState<Usuario | null>(null);
+  const [modalEditarOpen, setModalEditarOpen] = useState(false);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -42,6 +45,7 @@ export default function Usuarios() {
     IdRol: 2,
     Activo: true
   });
+
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -77,6 +81,7 @@ export default function Usuarios() {
         u.Apellido.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
         u.UsuarioNombre.toLowerCase().includes(debouncedSearch.toLowerCase())
     );
+
     setFilteredUsuarios(filtered);
   };
 
@@ -86,12 +91,15 @@ export default function Usuarios() {
     if (!isNotEmpty(formData.Nombre)) {
       errors.Nombre = 'El nombre es requerido';
     }
+
     if (!isNotEmpty(formData.Apellido)) {
       errors.Apellido = 'El apellido es requerido';
     }
+
     if (!isNotEmpty(formData.UsuarioNombre)) {
       errors.UsuarioNombre = 'El usuario es requerido';
     }
+
     if (!isEditing && !minLength(formData.ClaveHash, 6)) {
       errors.ClaveHash = 'La contraseña debe tener al menos 6 caracteres';
     }
@@ -144,7 +152,6 @@ export default function Usuarios() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     try {
@@ -178,20 +185,53 @@ export default function Usuarios() {
     }
   };
 
+  const handleEditarPerfil = (usuario: Usuario) => {
+    setSelectedUsuario(usuario);
+    setModalEditarOpen(true);
+  };
+
   const columns = [
     {
-      key: 'IdUsuario',
-      header: 'ID',
-      width: '80px'
+      key: 'Avatar',
+      header: '',
+      width: '60px',
+      render: (usuario: Usuario) => (
+        <Avatar
+          src={usuario.FotoPerfil}
+          nombre={usuario.Nombre}
+          apellido={usuario.Apellido}
+          size="md"
+        />
+      )
     },
     {
       key: 'Nombre',
       header: 'Nombre Completo',
-      render: (usuario: Usuario) => `${usuario.Nombre} ${usuario.Apellido}`
+      render: (usuario: Usuario) => (
+        <div>
+          <p className="font-medium text-gray-900 dark:text-white">
+            {usuario.Nombre} {usuario.Apellido}
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">@{usuario.UsuarioNombre}</p>
+        </div>
+      )
     },
     {
-      key: 'UsuarioNombre',
-      header: 'Usuario'
+      key: 'Email',
+      header: 'Contacto',
+      render: (usuario: Usuario) => (
+        <div className="text-sm">
+          {usuario.Email && (
+            <p className="text-gray-900 dark:text-white">{usuario.Email}</p>
+          )}
+          {usuario.Telefono && (
+            <p className="text-gray-500 dark:text-gray-400">{usuario.Telefono}</p>
+          )}
+          {!usuario.Email && !usuario.Telefono && (
+            <p className="text-gray-400 dark:text-gray-500">-</p>
+          )}
+        </div>
+      )
     },
     {
       key: 'IdRol',
@@ -214,16 +254,26 @@ export default function Usuarios() {
     {
       key: 'actions',
       header: 'Acciones',
-      width: '150px',
+      width: '200px',
       render: (usuario: Usuario) => (
         <div className="flex gap-2">
           <button
             onClick={(e) => {
               e.stopPropagation();
+              handleEditarPerfil(usuario);
+            }}
+            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+            title="Editar Perfil"
+          >
+            <UserCog className="w-4 h-4" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
               handleOpenModal(usuario);
             }}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            title="Editar"
+            className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
+            title="Editar Rol/Estado"
           >
             <Edit className="w-4 h-4" />
           </button>
@@ -232,7 +282,7 @@ export default function Usuarios() {
               e.stopPropagation();
               handleDelete(usuario);
             }}
-            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
             title="Eliminar"
           >
             <Trash2 className="w-4 h-4" />
@@ -266,7 +316,7 @@ export default function Usuarios() {
             placeholder="Buscar por nombre o usuario..."
             className="w-full max-w-md"
           />
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 dark:text-gray-400">
             Total: <span className="font-semibold">{filteredUsuarios.length}</span> usuarios
           </div>
         </div>
@@ -274,7 +324,7 @@ export default function Usuarios() {
         <Table data={filteredUsuarios} columns={columns} />
       </Card>
 
-      {/* Modal de Crear/Editar */}
+      {/* Modal Crear/Editar (solo rol y estado) */}
       <Modal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
@@ -289,6 +339,7 @@ export default function Usuarios() {
               onChange={(e) => setFormData({ ...formData, Nombre: e.target.value })}
               error={formErrors.Nombre}
               placeholder="Juan"
+              disabled={isEditing}
             />
             <Input
               label="Apellido"
@@ -296,6 +347,7 @@ export default function Usuarios() {
               onChange={(e) => setFormData({ ...formData, Apellido: e.target.value })}
               error={formErrors.Apellido}
               placeholder="Pérez"
+              disabled={isEditing}
             />
           </div>
 
@@ -306,6 +358,7 @@ export default function Usuarios() {
             onChange={(e) => setFormData({ ...formData, UsuarioNombre: e.target.value })}
             error={formErrors.UsuarioNombre}
             placeholder="juanperez"
+            disabled={isEditing}
           />
 
           {!isEditing && (
@@ -321,7 +374,7 @@ export default function Usuarios() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Rol</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rol</label>
             <select
               value={formData.IdRol}
               onChange={(e) => setFormData({ ...formData, IdRol: Number(e.target.value) })}
@@ -343,15 +396,15 @@ export default function Usuarios() {
               onChange={(e) => setFormData({ ...formData, Activo: e.target.checked })}
               className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
             />
-            <label htmlFor="activo" className="text-sm font-medium text-gray-700">
+            <label htmlFor="activo" className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Usuario activo
             </label>
           </div>
 
           {isEditing && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-sm text-blue-800">
-                ℹ️ Para cambiar la contraseña, usa la función "Cambiar Contraseña" después de guardar.
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+              <p className="text-sm text-blue-800 dark:text-blue-300">
+                ℹ️ Para editar datos personales o cambiar contraseña, usa el botón <strong>Editar Perfil</strong> en la tabla.
               </p>
             </div>
           )}
@@ -366,6 +419,19 @@ export default function Usuarios() {
           </div>
         </form>
       </Modal>
+
+      {/* Modal Editar Perfil Completo */}
+      {selectedUsuario && (
+        <ModalEditarUsuario
+          isOpen={modalEditarOpen}
+          onClose={() => {
+            setModalEditarOpen(false);
+            setSelectedUsuario(null);
+          }}
+          usuario={selectedUsuario}
+          onActualizado={fetchUsuarios}
+        />
+      )}
     </div>
   );
 }

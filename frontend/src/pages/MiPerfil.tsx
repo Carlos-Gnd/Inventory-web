@@ -1,27 +1,41 @@
 // frontend/src/pages/MiPerfil.tsx - REDISEÑO COMPLETO
-
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { perfilService } from '../services/perfilService';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
 import Avatar from '../components/common/Avatar';
+import Modal from '../components/common/Modal';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { 
-  User, Mail, Phone, MapPin, Calendar, Camera, Save, X, 
-  Upload, Trash2, Edit3, Check, Shield, Clock 
+import {
+  User, Mail, Phone, MapPin, Calendar, Camera, Save, X,
+  Upload, Trash2, Edit3, Check, Shield, Clock, Lock, 
+  ArrowLeft, Key, AlertTriangle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formatDate } from '../utils/formatters';
 
 export default function MiPerfil() {
+  const navigate = useNavigate();
   const { user, setUser } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Estados para cambio de contraseña
+  const [modalClaveOpen, setModalClaveOpen] = useState(false);
+  const [claveActual, setClaveActual] = useState('');
+  const [claveNueva, setClaveNueva] = useState('');
+  const [claveConfirmar, setClaveConfirmar] = useState('');
+  const [mostrarClaves, setMostrarClaves] = useState({
+    actual: false,
+    nueva: false,
+    confirmar: false
+  });
 
   const [formData, setFormData] = useState({
     Nombre: user?.Nombre || '',
@@ -73,6 +87,10 @@ export default function MiPerfil() {
       newErrors.Email = 'Email inválido';
     }
 
+    if (formData.Telefono && !/^[0-9\-\s\+\(\)]*$/.test(formData.Telefono)) {
+      newErrors.Telefono = 'Teléfono inválido';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -110,13 +128,11 @@ export default function MiPerfil() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validar tipo
     if (!perfilService.validarTipoImagen(file)) {
       toast.error('❌ Solo se permiten imágenes JPG, PNG o GIF');
       return;
     }
 
-    // Validar tamaño
     if (!perfilService.validarTamañoImagen(file)) {
       toast.error('❌ La imagen no puede exceder 2MB');
       return;
@@ -125,17 +141,14 @@ export default function MiPerfil() {
     try {
       setSubiendoFoto(true);
       const base64 = await perfilService.convertirABase64(file);
-      
       const response = await perfilService.actualizarFoto(base64);
       
-      // Actualizar estado local
       if (user) {
         setUser({ ...user, FotoPerfil: response.FotoPerfil });
       }
       
       toast.success('✅ Foto actualizada exitosamente');
     } catch (error: any) {
-      console.error('Error completo:', error);
       toast.error(error.response?.data?.error || '❌ Error al actualizar foto');
     } finally {
       setSubiendoFoto(false);
@@ -161,46 +174,94 @@ export default function MiPerfil() {
     }
   };
 
+  const handleCambiarClave = async () => {
+    if (!claveActual.trim()) {
+      toast.error('Ingresa tu contraseña actual');
+      return;
+    }
+
+    if (claveNueva.length < 6) {
+      toast.error('La nueva contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    if (claveNueva !== claveConfirmar) {
+      toast.error('Las contraseñas no coinciden');
+      return;
+    }
+
+    try {
+      await perfilService.cambiarMiClave(claveActual, claveNueva);
+      toast.success('✅ Contraseña actualizada exitosamente');
+      setModalClaveOpen(false);
+      setClaveActual('');
+      setClaveNueva('');
+      setClaveConfirmar('');
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || '❌ Error al cambiar contraseña');
+    }
+  };
+
   if (loading) return <LoadingSpinner size="lg" />;
 
   return (
     <div className="space-y-6 animate-fade-in max-w-7xl mx-auto">
-      {/* Header */}
+      {/* Header con botón de regresar */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Mi Perfil</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Administra tu información personal</p>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="secondary"
+            onClick={() => navigate('/dashboard')}
+            icon={<ArrowLeft className="w-5 h-5" />}
+            size="lg"
+          >
+            Regresar
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Mi Perfil</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">Administra tu información personal</p>
+          </div>
         </div>
         
         {!modoEdicion && (
-          <Button 
-            onClick={() => setModoEdicion(true)}
-            icon={<Edit3 className="w-5 h-5" />}
-            size="lg"
-          >
-            Editar Perfil
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              onClick={() => setModalClaveOpen(true)}
+              icon={<Key className="w-5 h-5" />}
+              size="lg"
+            >
+              Cambiar Contraseña
+            </Button>
+            <Button
+              onClick={() => setModoEdicion(true)}
+              icon={<Edit3 className="w-5 h-5" />}
+              size="lg"
+            >
+              Editar Perfil
+            </Button>
+          </div>
         )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Columna Izquierda: Foto de Perfil - 4 columnas */}
+        {/* Columna Izquierda: Avatar y Info Rápida */}
         <div className="lg:col-span-4">
           <Card className="sticky top-6">
             <div className="flex flex-col items-center text-center">
-              {/* Avatar con overlay para cambiar foto */}
+              {/* Avatar con overlay */}
               <div className="relative group mb-6">
                 <Avatar
                   src={user?.FotoPerfil}
                   nombre={user?.Nombre}
                   apellido={user?.Apellido}
                   size="xl"
-                  className="transition-all duration-300 group-hover:opacity-75"
+                  className="transition-all duration-300 group-hover:opacity-75 ring-4 ring-primary-100 dark:ring-primary-900"
                 />
                 
                 {/* Overlay para cambiar foto */}
-                <div 
-                  className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer"
+                <div
+                  className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -236,10 +297,10 @@ export default function MiPerfil() {
               </p>
 
               {/* Badge de rol */}
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-4 ${
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 ${
                 user?.IdRol === 1
-                  ? 'bg-gradient-to-r from-primary-500 to-purple-500 text-white'
-                  : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+                  ? 'bg-gradient-to-r from-primary-500 to-purple-500 text-white shadow-lg'
+                  : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg'
               }`}>
                 <Shield className="w-4 h-4" />
                 {user?.IdRol === 1 ? 'Administrador' : 'Cajero'}
@@ -247,7 +308,7 @@ export default function MiPerfil() {
 
               {/* Botones de foto */}
               {user?.FotoPerfil && (
-                <div className="flex gap-2 w-full">
+                <div className="flex gap-2 w-full mb-6">
                   <Button
                     variant="secondary"
                     size="sm"
@@ -272,7 +333,7 @@ export default function MiPerfil() {
               )}
 
               {/* Información adicional */}
-              <div className="w-full mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-4">
+              <div className="w-full pt-6 border-t border-gray-200 dark:border-gray-700 space-y-4">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
                     <Clock className="w-4 h-4" />
@@ -311,10 +372,10 @@ export default function MiPerfil() {
           </Card>
         </div>
 
-        {/* Columna Derecha: Formulario - 8 columnas */}
+        {/* Columna Derecha: Formulario */}
         <div className="lg:col-span-8 space-y-6">
           {/* Información Personal */}
-          <Card title="Información Personal">
+          <Card title="Información Personal" subtitle="Actualiza tus datos básicos">
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
@@ -326,7 +387,6 @@ export default function MiPerfil() {
                   disabled={!modoEdicion}
                   placeholder="Tu nombre"
                 />
-
                 <Input
                   label="Apellido"
                   icon={<User className="w-5 h-5 text-gray-400" />}
@@ -356,10 +416,10 @@ export default function MiPerfil() {
                   icon={<Phone className="w-5 h-5 text-gray-400" />}
                   value={formData.Telefono}
                   onChange={(e) => setFormData({ ...formData, Telefono: e.target.value })}
+                  error={errors.Telefono}
                   disabled={!modoEdicion}
                   placeholder="7777-7777"
                 />
-
                 <Input
                   label="Fecha de Nacimiento"
                   type="date"
@@ -405,23 +465,29 @@ export default function MiPerfil() {
           </Card>
 
           {/* Información de Cuenta */}
-          <Card title="Información de Cuenta">
+          <Card title="Información de Cuenta" subtitle="Detalles de tu cuenta en el sistema">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Usuario</p>
+              <div className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Usuario
+                </p>
                 <p className="text-lg font-semibold text-gray-900 dark:text-white">
                   {user?.UsuarioNombre}
                 </p>
               </div>
               
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Rol</p>
+              <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  Rol
+                </p>
                 <p className="text-lg font-semibold text-gray-900 dark:text-white">
                   {user?.IdRol === 1 ? 'Administrador' : 'Cajero'}
                 </p>
               </div>
               
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800">
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Estado</p>
                 <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
                   user?.Activo
@@ -433,8 +499,11 @@ export default function MiPerfil() {
                 </span>
               </div>
               
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Miembro desde</p>
+              <div className="p-4 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Miembro desde
+                </p>
                 <p className="text-lg font-semibold text-gray-900 dark:text-white">
                   {user?.FechaRegistro ? formatDate(user.FechaRegistro) : 'N/A'}
                 </p>
@@ -463,6 +532,72 @@ export default function MiPerfil() {
           </div>
         </div>
       </div>
+
+      {/* Modal de Cambio de Contraseña */}
+      <Modal
+        isOpen={modalClaveOpen}
+        onClose={() => {
+          setModalClaveOpen(false);
+          setClaveActual('');
+          setClaveNueva('');
+          setClaveConfirmar('');
+        }}
+        title="Cambiar Contraseña"
+        size="md"
+      >
+        <div className="space-y-4">
+          <div className="flex items-start gap-3 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+            <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-yellow-800 dark:text-yellow-300">
+              <p className="font-medium">Importante:</p>
+              <p>Asegúrate de recordar tu nueva contraseña. Deberás usarla en tu próximo inicio de sesión.</p>
+            </div>
+          </div>
+
+          <Input
+            label="Contraseña Actual"
+            type={mostrarClaves.actual ? 'text' : 'password'}
+            icon={<Lock className="w-5 h-5 text-gray-400" />}
+            value={claveActual}
+            onChange={(e) => setClaveActual(e.target.value)}
+            placeholder="Ingresa tu contraseña actual"
+          />
+
+          <Input
+            label="Nueva Contraseña"
+            type={mostrarClaves.nueva ? 'text' : 'password'}
+            icon={<Key className="w-5 h-5 text-gray-400" />}
+            value={claveNueva}
+            onChange={(e) => setClaveNueva(e.target.value)}
+            placeholder="Mínimo 6 caracteres"
+          />
+
+          <Input
+            label="Confirmar Nueva Contraseña"
+            type={mostrarClaves.confirmar ? 'text' : 'password'}
+            icon={<Key className="w-5 h-5 text-gray-400" />}
+            value={claveConfirmar}
+            onChange={(e) => setClaveConfirmar(e.target.value)}
+            placeholder="Repite la nueva contraseña"
+          />
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              onClick={handleCambiarClave}
+              icon={<Check className="w-5 h-5" />}
+              className="flex-1"
+            >
+              Cambiar Contraseña
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setModalClaveOpen(false)}
+            >
+              Cancelar
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
