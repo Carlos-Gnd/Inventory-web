@@ -1,4 +1,5 @@
 // frontend/src/pages/Productos.tsx
+
 import { useState, useEffect } from 'react';
 import { productoService } from '../services/productoService';
 import { categoriaService } from '../services/categoriaService';
@@ -11,7 +12,8 @@ import Table from '../components/common/Table';
 import SearchBar from '../components/common/SearchBar';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Badge from '../components/common/Badge';
-import { Plus, Edit, Trash2, Package, AlertTriangle } from 'lucide-react';
+import BarcodeDisplay, { BarcodeLabel } from '../components/common/BarcodeDisplay';
+import { Plus, Edit, Trash2, Package, AlertTriangle, Barcode } from 'lucide-react';
 import { useDebounce } from '../hooks/useDebounce';
 import toast from 'react-hot-toast';
 import { formatCurrency } from '../utils/formatters';
@@ -24,12 +26,19 @@ export default function Productos() {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 300);
 
+  // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
 
+  // Modal de Código de Barras
+  const [barcodeModalOpen, setBarcodeModalOpen] = useState(false);
+  const [barcodeProducto, setBarcodeProducto] = useState<Producto | null>(null);
+
+  // Form states
   const [formData, setFormData] = useState({
     Nombre: '',
+    CodigoBarras: '',
     IdCategoria: 0,
     Precio: 0,
     Stock: 0,
@@ -76,6 +85,7 @@ export default function Productos() {
       (p) =>
         p.Nombre.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
         (p.Descripcion && p.Descripcion.toLowerCase().includes(debouncedSearch.toLowerCase())) ||
+        (p.CodigoBarras && p.CodigoBarras.includes(debouncedSearch)) || // 👈 Búsqueda por código
         (p.Categoria?.Nombre && p.Categoria.Nombre.toLowerCase().includes(debouncedSearch.toLowerCase()))
     );
 
@@ -91,6 +101,11 @@ export default function Productos() {
     if (formData.Stock < 0) errors.Stock = 'El stock no puede ser negativo';
     if (formData.StockMinimo < 0) errors.StockMinimo = 'El stock mínimo no puede ser negativo';
 
+    // Validar código de barras si se proporciona
+    if (formData.CodigoBarras && !/^[0-9A-Z\-]+$/.test(formData.CodigoBarras)) {
+      errors.CodigoBarras = 'Código de barras inválido (solo números, letras mayúsculas y guiones)';
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -101,6 +116,7 @@ export default function Productos() {
       setSelectedProducto(producto);
       setFormData({
         Nombre: producto.Nombre,
+        CodigoBarras: producto.CodigoBarras || '',
         IdCategoria: producto.IdCategoria,
         Precio: producto.Precio,
         Stock: producto.Stock,
@@ -114,6 +130,7 @@ export default function Productos() {
       setSelectedProducto(null);
       setFormData({
         Nombre: '',
+        CodigoBarras: '',
         IdCategoria: 0,
         Precio: 0,
         Stock: 0,
@@ -145,7 +162,6 @@ export default function Productos() {
         await productoService.registrar(formData);
         toast.success('Producto creado exitosamente');
       }
-
       await fetchData();
       handleCloseModal();
     } catch (error: any) {
@@ -165,9 +181,26 @@ export default function Productos() {
     }
   };
 
+  const handleVerCodigo = (producto: Producto) => {
+    setBarcodeProducto(producto);
+    setBarcodeModalOpen(true);
+  };
+
   const columns = [
-    { key: 'IdProducto', header: 'ID', width: '80px' },
-    { key: 'Nombre', header: 'Producto' },
+    { 
+      key: 'CodigoBarras', 
+      header: 'Código', 
+      width: '120px',
+      render: (p: Producto) => p.CodigoBarras ? (
+        <BarcodeLabel value={p.CodigoBarras} />
+      ) : (
+        <span className="text-xs text-gray-400 dark:text-gray-500">Sin código</span>
+      )
+    },
+    { 
+      key: 'Nombre', 
+      header: 'Producto'
+    },
     {
       key: 'Categoria',
       header: 'Categoría',
@@ -185,7 +218,11 @@ export default function Productos() {
         <div className="flex items-center gap-2">
           <span>{p.Stock}</span>
           {p.Stock <= p.StockMinimo && (
-            <AlertTriangle className="w-4 h-4 text-red-500" />
+            <AlertTriangle 
+              className="w-4 h-4 text-red-500" 
+              title="Stock bajo"
+              aria-label="Stock bajo"
+            />
           )}
         </div>
       )
@@ -202,15 +239,27 @@ export default function Productos() {
     {
       key: 'actions',
       header: 'Acciones',
-      width: '150px',
+      width: '180px',
       render: (producto: Producto) => (
         <div className="flex gap-2">
+          {producto.CodigoBarras && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleVerCodigo(producto);
+              }}
+              className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
+              title="Ver código de barras"
+            >
+              <Barcode className="w-4 h-4" />
+            </button>
+          )}
           <button
             onClick={(e) => {
               e.stopPropagation();
               handleOpenModal(producto);
             }}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
           >
             <Edit className="w-4 h-4" />
           </button>
@@ -219,7 +268,7 @@ export default function Productos() {
               e.stopPropagation();
               handleDelete(producto);
             }}
-            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -247,10 +296,10 @@ export default function Productos() {
           <SearchBar
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar producto..."
+            placeholder="Buscar por nombre, código de barras o categoría..."
             className="w-full max-w-md"
           />
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 dark:text-gray-400">
             Total: <span className="font-semibold">{filteredProductos.length}</span> productos
           </div>
         </div>
@@ -258,6 +307,7 @@ export default function Productos() {
         <Table data={filteredProductos} columns={columns} />
       </Card>
 
+      {/* Modal Crear/Editar */}
       <Modal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
@@ -273,8 +323,20 @@ export default function Productos() {
             placeholder="Ej: Pastel de Chocolate"
           />
 
+          {/* Código de Barras */}
+          <Input
+            label="Código de Barras (Opcional)"
+            icon={<Barcode className="w-5 h-5 text-gray-400" />}
+            value={formData.CodigoBarras}
+            onChange={(e) => setFormData({ ...formData, CodigoBarras: e.target.value.toUpperCase() })}
+            error={formErrors.CodigoBarras}
+            placeholder="Dejar vacío para generar automáticamente"
+          />
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Categoría
+            </label>
             <select
               value={formData.IdCategoria}
               onChange={(e) => setFormData({ ...formData, IdCategoria: Number(e.target.value) })}
@@ -288,7 +350,7 @@ export default function Productos() {
               ))}
             </select>
             {formErrors.IdCategoria && (
-              <p className="mt-1 text-sm text-red-600">{formErrors.IdCategoria}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{formErrors.IdCategoria}</p>
             )}
           </div>
 
@@ -322,7 +384,9 @@ export default function Productos() {
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Descripción
+            </label>
             <textarea
               value={formData.Descripcion}
               onChange={(e) => setFormData({ ...formData, Descripcion: e.target.value })}
@@ -352,6 +416,31 @@ export default function Productos() {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      {/* Modal Ver Código de Barras */}
+      <Modal
+        isOpen={barcodeModalOpen}
+        onClose={() => setBarcodeModalOpen(false)}
+        title={`Código de Barras - ${barcodeProducto?.Nombre}`}
+        size="md"
+      >
+        {barcodeProducto?.CodigoBarras && (
+          <div className="space-y-4">
+            <BarcodeDisplay
+              value={barcodeProducto.CodigoBarras}
+              showValue={true}
+              height={80}
+              width={2}
+            />
+            
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <p className="text-sm text-blue-800 dark:text-blue-300">
+                Puedes imprimir este código o escanearlo directamente desde la pantalla con tu lector de códigos de barras.
+              </p>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

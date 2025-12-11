@@ -1,4 +1,5 @@
-// frontend/src/components/common/SearchBar.tsx
+// frontend/src/components/common/SearchBar.tsx - CORREGIDO
+
 import { Search } from 'lucide-react';
 import { InputHTMLAttributes } from 'react';
 

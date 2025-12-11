@@ -11,7 +11,7 @@ import Modal from '../components/common/Modal';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import {
   User, Mail, Phone, MapPin, Calendar, Camera, Save, X,
-  Upload, Trash2, Edit3, Check, Shield, Clock, Lock, 
+  Upload, Trash2, Edit3, Check, Shield, Clock, Lock,
   ArrowLeft, Key, AlertTriangle
 } from 'lucide-react';
 import toast from 'react-hot-toast';

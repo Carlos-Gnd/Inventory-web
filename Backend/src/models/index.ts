@@ -33,6 +33,7 @@ export interface Categoria {
 export interface Producto {
   IdProducto?: number;
   Nombre: string;
+  CodigoBarras?: string;
   IdCategoria: number;
   Precio: number;
   Stock: number;
