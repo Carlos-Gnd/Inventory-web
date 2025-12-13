@@ -65,3 +65,10 @@ tmp/
 # Archivos de sistema operativo (Mac/Windows extra)
 .DS_Store
 Thumbs.db
+
+# --- Utilidades Locales ---
+exportar_proyecto.js
+
+# --- Reportes de Código (¡SENSITIVO!) ---
+PROYECTO_COMPLETO.txt
+PROYECTO_COMPLETO_V2.txt
