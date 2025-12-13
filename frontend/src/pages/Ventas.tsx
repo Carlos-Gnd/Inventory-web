@@ -1,4 +1,4 @@
-// frontend/src/pages/Ventas.tsx - CORREGIDO
+// frontend/src/pages/Ventas.tsx
 import { useState, useEffect } from 'react';
 import { ventaService } from '../services/ventaService';
 import { Venta, DetalleVenta } from '../types';
@@ -25,6 +25,7 @@ export default function Ventas() {
     fecha.setMonth(fecha.getMonth() - 1);
     return fecha.toISOString().split('T')[0];
   });
+
   const [fechaFin, setFechaFin] = useState(() => {
     return new Date().toISOString().split('T')[0];
   });
@@ -39,6 +40,7 @@ export default function Ventas() {
       const data = await ventaService.listar();
       setVentas(data);
     } catch (error) {
+      console.error('Error al cargar ventas:', error);
       toast.error('Error al cargar ventas');
     } finally {
       setLoading(false);
@@ -185,10 +187,7 @@ export default function Ventas() {
               className="input-field"
             />
           </div>
-          <Button
-            onClick={handleFiltrarPorFechas}
-            icon={<Calendar className="w-5 h-5" />}
-          >
+          <Button onClick={handleFiltrarPorFechas} icon={<Calendar className="w-5 h-5" />}>
             Filtrar
           </Button>
           <Button variant="secondary" onClick={fetchVentas}>
@@ -202,7 +201,7 @@ export default function Ventas() {
         <Table data={ventas} columns={columns} emptyMessage="No hay ventas registradas" />
       </Card>
 
-      {/* Modal Detalle - CORREGIDO */}
+      {/* Modal Detalle */}
       <Modal
         isOpen={detalleModalOpen}
         onClose={() => setDetalleModalOpen(false)}
@@ -211,7 +210,6 @@ export default function Ventas() {
       >
         {ventaSeleccionada && (
           <div className="space-y-4">
-            {/* Información de la venta - CORREGIDO */}
             <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Fecha</p>
@@ -233,7 +231,6 @@ export default function Ventas() {
               </div>
             </div>
 
-            {/* Comentario */}
             {ventaSeleccionada.Comentario && (
               <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Comentario</p>
@@ -241,13 +238,12 @@ export default function Ventas() {
               </div>
             )}
 
-            {/* Lista de Productos - CORREGIDO */}
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Productos</h3>
               <div className="space-y-2">
                 {detalleVenta.map((detalle, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600"
                   >
                     <div className="flex-1">
@@ -262,7 +258,6 @@ export default function Ventas() {
               </div>
             </div>
 
-            {/* Total */}
             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex justify-between text-xl font-bold text-primary-600 dark:text-primary-400">
                 <span>Total:</span>

@@ -49,6 +49,7 @@ export default function Dashboard() {
         fechaInicio.toISOString(),
         fechaFin.toISOString()
       );
+
       const productosData = await reporteService.obtenerReporteProductos();
       const stockBajo = await productoService.obtenerStockBajo();
 
@@ -61,8 +62,10 @@ export default function Dashboard() {
         productosStockBajo: productosData.estadisticas.productosStockBajo,
         valorInventario: productosData.estadisticas.valorInventario
       });
+
       setProductosStockBajo(stockBajo);
     } catch (error: any) {
+      console.error('Error al cargar dashboard:', error);
       toast.error('Error al cargar datos del dashboard');
     } finally {
       setLoading(false);

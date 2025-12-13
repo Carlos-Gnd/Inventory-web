@@ -35,10 +35,10 @@ router.get('/ventas', async (req: Request, res: Response): Promise<void> => {
     res.json({
       ventas,
       estadisticas: {
-        totalVentas,
-        montoTotal,
-        totalProductos,
-        promedioVenta: totalVentas > 0 ? montoTotal / totalVentas : 0
+        totalVentas: totalVentas || 0,
+        montoTotal: isNaN(montoTotal) ? 0 : montoTotal,
+        totalProductos: totalProductos || 0,
+        promedioVenta: totalVentas > 0 ? (montoTotal / totalVentas) : 0
       }
     });
   } catch (error: any) {

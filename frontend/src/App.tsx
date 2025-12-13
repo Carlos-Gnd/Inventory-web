@@ -1,41 +1,48 @@
 // frontend/src/App.tsx
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuthStore } from './store/authStore'
-import { ThemeProvider } from './contexts/ThemeContext'
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuthStore } from './store/authStore';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 // Pages
-import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
-import Productos from './pages/Productos'
-import Categorias from './pages/Categorias'
-import Usuarios from './pages/Usuarios'
-import Ventas from './pages/Ventas'
-import VentasPropias from './pages/VentasPropias'
-import RegistrarVentas from './pages/RegistrarVentas'
-import Reportes from './pages/Reportes'
-import HistorialSesiones from './pages/HistorialSesiones'
-import MiPerfil from './pages/MiPerfil'
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Productos from './pages/Productos';
+import Categorias from './pages/Categorias';
+import Usuarios from './pages/Usuarios';
+import Ventas from './pages/Ventas';
+import VentasPropias from './pages/VentasPropias';
+import RegistrarVentas from './pages/RegistrarVentas';
+import Reportes from './pages/Reportes';
+import HistorialSesiones from './pages/HistorialSesiones';
+import MiPerfil from './pages/MiPerfil';
+import Notificaciones from './pages/Notificaciones';
 
 // Layout
-import Layout from './components/layout/Layout'
+import Layout from './components/layout/Layout';
 
 // Protected Route Component
-const ProtectedRoute = ({ children, adminOnly = false }: { children: React.ReactNode, adminOnly?: boolean }) => {
-  const { isAuthenticated, user } = useAuthStore()
+const ProtectedRoute = ({ 
+  children, 
+  adminOnly = false 
+}: { 
+  children: React.ReactNode;
+  adminOnly?: boolean;
+}) => {
+  const { isAuthenticated, user } = useAuthStore();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/login" replace />;
   }
 
   if (adminOnly && user?.IdRol !== 1) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/dashboard" replace />;
   }
 
-  return <>{children}</>
-}
+  return <>{children}</>;
+};
 
 function App() {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <ThemeProvider>
@@ -44,12 +51,16 @@ function App() {
           {/* Public Routes */}
           <Route
             path="/login"
-            element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}
+            element={
+              isAuthenticated ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Login />
+              )
+            }
           />
 
           {/* Protected Routes */}
-
-          <Route path="mi-perfil" element={<MiPerfil />} />
           <Route
             path="/"
             element={
@@ -58,10 +69,12 @@ function App() {
               </ProtectedRoute>
             }
           >
-          
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
-            
+
+            {/* Mi Perfil - Todos los usuarios */}
+            <Route path="mi-perfil" element={<MiPerfil />} />
+
             {/* Admin Only Routes */}
             <Route
               path="usuarios"
@@ -72,10 +85,18 @@ function App() {
               }
             />
             <Route
-              path="historial-sesiones" 
+              path="historial-sesiones"
               element={
                 <ProtectedRoute adminOnly>
                   <HistorialSesiones />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="notificaciones"
+              element={
+                <ProtectedRoute adminOnly>
+                  <Notificaciones />
                 </ProtectedRoute>
               }
             />
@@ -103,7 +124,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
             {/* Shared Routes (Admin & Cajero) */}
             <Route path="registrar-ventas" element={<RegistrarVentas />} />
             <Route path="ventas-propias" element={<VentasPropias />} />
@@ -115,7 +136,7 @@ function App() {
         </Routes>
       </div>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App; 

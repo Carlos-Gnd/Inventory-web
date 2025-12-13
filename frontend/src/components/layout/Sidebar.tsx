@@ -1,6 +1,6 @@
 // frontend/src/components/layout/Sidebar.tsx
-import { NavLink } from 'react-router-dom'
-import { useAuthStore } from '../../store/authStore'
+import { NavLink } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore';
 import {
   LayoutDashboard,
   Users,
@@ -11,17 +11,17 @@ import {
   FileText,
   TrendingUp,
   Shield
-} from 'lucide-react'
+} from 'lucide-react';
 
 interface SidebarProps {
-  isOpen: boolean
+  isOpen: boolean;
 }
 
 interface NavItem {
-  name: string
-  path: string
-  icon: React.ReactNode
-  adminOnly?: boolean
+  name: string;
+  path: string;
+  icon: React.ReactNode;
+  adminOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -75,18 +75,18 @@ const navItems: NavItem[] = [
     path: '/reportes',
     icon: <FileText className="w-5 h-5" />
   }
-]
+];
 
 export default function Sidebar({ isOpen }: SidebarProps) {
-  const { user } = useAuthStore()
-  const isAdmin = user?.IdRol === 1
+  const { user } = useAuthStore();
+  const isAdmin = user?.IdRol === 1;
 
   const filteredNavItems = navItems.filter(item => {
     if (item.adminOnly && !isAdmin) {
-      return false
+      return false;
     }
-    return true
-  })
+    return true;
+  });
 
   return (
     <aside
@@ -150,5 +150,5 @@ export default function Sidebar({ isOpen }: SidebarProps) {
         </div>
       </div>
     </aside>
-  )
+  );
 }
