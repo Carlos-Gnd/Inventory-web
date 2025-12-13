@@ -1,4 +1,4 @@
-// frontend/src/components/layout/Navbar.tsx - ACTUALIZADO
+// frontend/src/components/layout/Navbar.tsx
 
 import { Menu, Bell, LogOut, Package, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import ThemeToggle from '../common/ThemeToggle';
 import Avatar from '../common/Avatar';
+import NotificationBell from '../common/NotificationBell';
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -78,10 +79,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
           <ThemeToggle />
 
           {/* Notifications */}
-          <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors relative">
-            <Bell className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-          </button>
+          <NotificationBell />
 
           {/* User menu */}
           <div className="relative" ref={menuRef}>

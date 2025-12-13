@@ -6,7 +6,7 @@ export interface Rol {
   RolNombre: string;
 }
 
-// Usuario - CON NUEVOS CAMPOS PARA PERFIL
+// Usuario
 export interface Usuario {
   IdUsuario?: number;
   Nombre: string;
@@ -153,4 +153,37 @@ export interface ActualizarPerfilRequest {
 
 export interface ActualizarFotoRequest {
   FotoPerfil: string;
+}
+
+// ==================== NOTIFICACIONES ====================
+export type TipoNotificacion = 'stock_bajo' | 'stock_critico' | 'venta' | 'sistema' | 'alerta';
+export type PrioridadNotificacion = 'baja' | 'media' | 'alta' | 'critica';
+
+export interface Notificacion {
+  IdNotificacion?: number;
+  Tipo: TipoNotificacion;
+  Titulo: string;
+  Mensaje: string;
+  IdProducto?: number;
+  IdUsuario?: number;
+  Prioridad: PrioridadNotificacion;
+  Leida: boolean;
+  FechaCreacion?: string;
+  FechaLeida?: string;
+  Icono?: string;
+  Color?: string;
+  Metadata?: any;
+  
+  Producto?: {
+    Nombre: string;
+    Stock: number;
+    StockMinimo: number;
+  };
+}
+
+export interface EstadisticasNotificaciones {
+  TotalNotificaciones: number;
+  NoLeidas: number;
+  Criticas: number;
+  Altas: number;
 }

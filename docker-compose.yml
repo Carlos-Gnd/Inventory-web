@@ -35,17 +35,16 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    
+    # Carga todas las variables desde el archivo .env
+    env_file:
+      - ./backend/.env
+    
+    # Sobreescribimos solo lo necesario para producción
     environment:
       NODE_ENV: production
-      PORT: 3000
-      DB_HOST: mariadb
-      DB_PORT: 3306
-      DB_USER: smartuser
-      DB_PASSWORD: smart123
-      DB_NAME: Smart_Inventory
-      JWT_SECRET: tu_super_secreto_jwt_2025_cambiar_en_produccion
-      JWT_EXPIRES_IN: 24h
-      CORS_ORIGIN: http://localhost:5173
+      # Nota: DB_HOST, EMAIL_USER, etc., ya se leen automáticamente del .env
+      
     depends_on:
       mariadb:
         condition: service_healthy
@@ -56,7 +55,7 @@ services:
       interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 60s  # ⬅️ Aumentado para dar tiempo al backend
+      start_period: 60s
 
   # Frontend React
   frontend:

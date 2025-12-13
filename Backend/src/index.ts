@@ -12,6 +12,8 @@ import ventaRoutes from './routes/venta.routes';
 import reporteRoutes from './routes/reporte.routes';
 import historialSesionRoutes from './routes/historialSesion.routes';
 import perfilRoutes from './routes/perfil.routes';
+import notificacionRoutes from './routes/notificacion.routes';
+import { emailWorker } from './workers/emailWorker';
 
 dotenv.config();
 
@@ -44,7 +46,7 @@ app.use('/api/ventas', ventaRoutes);
 app.use('/api/reportes', reporteRoutes);
 app.use('/api/historial-sesiones', historialSesionRoutes);
 app.use('/api/perfil', perfilRoutes);
-
+app.use('/api/notificaciones', notificacionRoutes);
 
 // Error handling
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
@@ -59,11 +61,27 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
       console.log(`📡 API disponible en http://localhost:${PORT}/api`);
+
+      // Iniciar email worker
+      emailWorker.start();
     });
   } catch (error) {
     console.error('❌ Error al iniciar el servidor:', error);
     process.exit(1);
   }
 };
+
+// Manejar señales de cierre
+process.on('SIGTERM', () => {
+  console.log('⚠️ SIGTERM recibido, cerrando worker...');
+  emailWorker.stop();
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('⚠️ SIGINT recibido, cerrando worker...');
+  emailWorker.stop();
+  process.exit(0);
+});
 
 startServer();
