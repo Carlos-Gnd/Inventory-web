@@ -60,8 +60,16 @@ export const useNotificacionStore = create<NotificacionState>((set, get) => ({
         loading: false 
       });
     } catch (error) {
-      console.error('Error al cargar notificaciones:', error);
-      set({ loading: false });
+      const message = error instanceof Error ? error.message : String(error)
+      console.error('Error al cargar notificaciones:', message);
+
+      const anyErr = error as any;
+      if (anyErr?.code === 'ECONNABORTED' || anyErr?.code === 'ERR_NETWORK' || anyErr?.response?.status === 401) {
+        console.log('Deteniendo polling automático por inestabilidad de red/bloqueo.');
+        get().detenerPolling();
+      }
+
+        set({ loading: false});
     }
   },
 

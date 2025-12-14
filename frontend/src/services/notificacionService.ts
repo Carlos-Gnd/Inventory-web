@@ -35,7 +35,14 @@ export const notificacionService = {
 
   // Obtener solo no leídas
   listarNoLeidas: async (): Promise<Notificacion[]> => {
-    return notificacionService.listar({ leida: false, limite: 50 });
+    // Pasamos el flag 'x-silent-error' para que si falla, no cierre la sesión
+    const { data } = await api.get<Notificacion[]>(
+      '/notificaciones?leida=false&limite=50', 
+      {
+        headers: { 'x-silent-error': 'true' }
+      }
+    );
+    return data;
   },
 
   // Obtener estadísticas
