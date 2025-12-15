@@ -15,7 +15,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import Badge from '../components/common/Badge';
 import { 
   ShoppingCart, Plus, Minus, Trash2, DollarSign, Receipt, 
-  Package, AlertTriangle, ArrowUpDown, Eye, EyeOff 
+  Package, AlertTriangle, ArrowUpDown, Eye, EyeOff, Check
 } from 'lucide-react';
 import { formatCurrency } from '../utils/formatters';
 import toast from 'react-hot-toast';
@@ -28,8 +28,12 @@ type SortOrder = 'asc' | 'desc';
 
 export default function RegistrarVentas() {
   const { user } = useAuthStore();
-  const { items, subtotal, descuento, total, addItem, removeItem, updateQuantity, setDescuento, clearCart } = useCartStore();
-  
+  const { 
+    items, subtotal, descuentoTotal, total,
+    addItem, removeItem, updateQuantity, clearCart,
+    aplicarCupon, removerCupon, cuponAplicado, descuentosAplicados
+  } = useCartStore();
+  const [codigoCuponInput, setCodigoCuponInput] = useState('');
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
@@ -211,6 +215,8 @@ export default function RegistrarVentas() {
     try {
       const venta = {
         IdUsuario: user!.IdUsuario!,
+        Subtotal: subtotal,
+        Descuento: descuentoTotal,
         Total: total,
         MetodoPago: metodoPago,
         Comentario: comentario,
@@ -220,7 +226,8 @@ export default function RegistrarVentas() {
           Cantidad: item.Cantidad,
           PrecioUnitario: item.PrecioUnitario,
           Subtotal: item.Subtotal
-        }))
+        })),
+        DescuentosAplicados: descuentosAplicados
       };
 
       await ventaService.registrar(venta);
@@ -429,11 +436,9 @@ export default function RegistrarVentas() {
                                   {producto.Stock}
                                 </span>
                                 {stockBajo && (
-                                  <AlertTriangle 
-                                    className="w-4 h-4 text-red-500" 
-                                    title="Stock bajo"
-                                    aria-label="Stock bajo" 
-                                  />
+                                  <div title="Stock bajo">
+                                    <AlertTriangle className="w-4 h-4 text-red-500"/>
+                                  </div>
                                 )}
                               </div>
                             </td>
@@ -572,14 +577,59 @@ export default function RegistrarVentas() {
                   <span className="font-medium text-gray-900 dark:text-white">{formatCurrency(subtotal)}</span>
                 </div>
 
-                <Input
-                  label="Descuento"
-                  type="number"
-                  step="0.01"
-                  value={descuento}
-                  onChange={(e) => setDescuento(parseFloat(e.target.value) || 0)}
-                  icon={<DollarSign className="w-5 h-5 text-gray-400" />}
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Cupón o Descuento
+                  </label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="CÓDIGO (Ej: PROMO10)"
+                      value={codigoCuponInput}
+                      onChange={(e) => setCodigoCuponInput(e.target.value.toUpperCase())}
+                      disabled={!!cuponAplicado} // Bloquear si ya hay cupón
+                      className="uppercase"
+                      icon={<DollarSign className="w-5 h-5 text-gray-400" />}
+                    />
+                    {cuponAplicado ? (
+                      <Button 
+                        variant="danger" 
+                        onClick={() => {
+                          removerCupon();
+                          setCodigoCuponInput('');
+                        }}
+                        title="Quitar cupón"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </Button>
+                    ) : (
+                      <Button 
+                        onClick={async () => {
+                          if(!codigoCuponInput.trim()) return;
+                          // Si falla la validación, el store muestra el toast de error
+                          await aplicarCupon(codigoCuponInput); 
+                        }}
+                        disabled={!codigoCuponInput}
+                      >
+                        Aplicar
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {/* Mensaje de éxito */}
+                  {cuponAplicado && (
+                    <p className="text-xs text-green-600 mt-1 flex items-center gap-1 font-medium">
+                      <Check className="w-3 h-3" /> Cupón {cuponAplicado} aplicado
+                    </p>
+                  )}
+
+                  {/* Mostrar desglose si hay descuento */}
+                  {descuentoTotal > 0 && (
+                    <div className="flex justify-between text-green-600 dark:text-green-400 font-medium text-sm mt-2">
+                        <span>Descuento:</span>
+                        <span>- {formatCurrency(descuentoTotal)}</span>
+                    </div>
+                  )}
+                </div>
 
                 <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex justify-between text-xl font-bold text-primary-600 dark:text-primary-400">

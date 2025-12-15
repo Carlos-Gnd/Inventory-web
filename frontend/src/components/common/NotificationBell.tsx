@@ -1,6 +1,6 @@
 // frontend/src/components/common/NotificationBell.tsx
 import { useState, useRef, useEffect } from 'react';
-import { Bell, Check, CheckCheck, X, Trash2, AlertTriangle, Package, ShoppingCart, Info } from 'lucide-react';
+import { Bell, Check, CheckCheck, Trash2, AlertTriangle, Package, ShoppingCart, Info } from 'lucide-react';
 import { useNotificacionStore } from '../../store/notificacionStore';
 import { formatDateTime } from '../../utils/formatters';
 import Badge from './Badge';

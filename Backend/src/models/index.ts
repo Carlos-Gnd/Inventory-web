@@ -49,6 +49,8 @@ export interface Venta {
   IdVenta?: number;
   Fecha?: Date;
   IdUsuario: number;
+  Subtotal?: number;
+  Descuento?: number;
   Total: number;
   MetodoPago: string;
   Comentario?: string;
@@ -57,6 +59,13 @@ export interface Venta {
   CantidadTotalProductos?: number;
   Usuario?: Usuario;
   DetallesVenta?: DetalleVenta[];
+  // GUARDAR EL HISTORIAL DEL CUPÓN USADO
+  DescuentosAplicados?: Array<{
+    IdDescuento: number;
+    MontoDescuento: number;
+    TipoDescuento: string;
+    DescripcionDescuento: string;
+  }>;
 }
 
 export interface DetalleVenta {

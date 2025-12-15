@@ -187,3 +187,94 @@ export interface EstadisticasNotificaciones {
   Criticas: number;
   Altas: number;
 }
+
+// ==================== DESCUENTOS ====================
+
+export type TipoDescuento = 'porcentaje' | 'monto_fijo' | '2x1' | '3x2' | 'combo';
+
+export interface Descuento {
+  IdDescuento?: number;
+  Nombre: string;
+  Descripcion?: string;
+  Tipo: TipoDescuento;
+  Valor?: number; // Porcentaje (0-100) o Monto fijo
+  
+  // Vigencia
+  FechaInicio: string;
+  FechaFin: string;
+  Activo: boolean;
+  
+  // Condiciones
+  MontoMinimo: number;
+  IdCategoriaAplica?: number;
+  IdProductoAplica?: number;
+  
+  // Cupones
+  CodigoCupon?: string;
+  UsosMaximos?: number;
+  UsosActuales: number;
+  
+  // Combos
+  ProductosCombo?: {
+    IdProducto: number;
+    Cantidad: number;
+    PrecioCombo: number;
+  }[];
+  
+  // Control
+  CreadoPor: number;
+  FechaCreacion?: string;
+  
+  // Relaciones
+  Categoria?: Categoria;
+  Producto?: Producto;
+  
+  // Extras para el frontend
+  CategoriaNombre?: string;
+  ProductoNombre?: string;
+  DiasRestantes?: number;
+  PorcentajeUso?: string;
+}
+
+export interface VentaDescuento {
+  IdVentaDescuento?: number;
+  IdVenta: number;
+  IdDescuento: number;
+  MontoDescuento: number;
+  TipoDescuento: string;
+  DescripcionDescuento?: string;
+  
+  // Relaciones
+  Descuento?: Descuento;
+}
+
+export interface ValidacionCupon {
+  descuento: Descuento | null;
+  valido: boolean;
+  mensaje: string;
+  montoDescuento: number;
+}
+
+export interface DescuentoAplicado {
+  descuento: Descuento;
+  montoDescuento: number;
+  descripcion: string;
+}
+
+// Actualizar interfaz Venta para incluir descuentos
+export interface Venta {
+  IdVenta?: number;
+  Fecha?: string;
+  IdUsuario: number;
+  Subtotal?: number; // Subtotal antes de descuentos
+  DescuentoTotal?: number; // Total de descuentos aplicados
+  Total: number;
+  MetodoPago: string;
+  Comentario?: string;
+  Estado: boolean;
+  FechaVenta?: string;
+  CantidadTotalProductos?: number;
+  Usuario?: Usuario;
+  DetallesVenta?: DetalleVenta[];
+  DescuentosAplicados?: VentaDescuento[]; // Descuentos aplicados a la venta
+}

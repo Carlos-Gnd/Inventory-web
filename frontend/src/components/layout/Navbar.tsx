@@ -1,6 +1,6 @@
 // frontend/src/components/layout/Navbar.tsx
 
-import { Menu, Bell, LogOut, Package, Settings } from 'lucide-react';
+import { Menu, LogOut, Package, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useState, useRef, useEffect } from 'react';

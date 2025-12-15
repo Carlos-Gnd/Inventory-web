@@ -11,14 +11,24 @@ export class VentaRepository {
 
       // Insertar venta
       const [ventaResult] = await connection.query<ResultSetHeader>(
-        `INSERT INTO Ventas (Fecha, IdUsuario, Total, MetodoPago, Comentario, Estado, FechaVenta)
-         VALUES (NOW(), ?, ?, ?, ?, ?, NOW())`,
-        [venta.IdUsuario, venta.Total, venta.MetodoPago, venta.Comentario || '', venta.Estado ? '1' : '0']
+        `INSERT INTO Ventas (
+            Fecha, IdUsuario, Subtotal, Descuento, Total, 
+            MetodoPago, Comentario, Estado, FechaVenta
+         ) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, NOW())`,
+        [
+          venta.IdUsuario, 
+          // Si el frontend no envía subtotal, calculamos revertiendo el total (fallback)
+          venta.Subtotal || venta.Total, 
+          venta.Descuento || 0, // Asegúrate que tu modelo Venta tenga este campo o mappedalo
+          venta.Total, 
+          venta.MetodoPago, 
+          venta.Comentario || '', 
+          venta.Estado ? '1' : '0'
+        ]
       );
-
       const idVenta = ventaResult.insertId;
 
-      // Insertar detalles y actualizar stock
+      // Insertar detalles de productos
       if (venta.DetallesVenta) {
         for (const detalle of venta.DetallesVenta) {
           await connection.query(
@@ -26,11 +36,34 @@ export class VentaRepository {
              VALUES (?, ?, ?, ?, ?)`,
             [idVenta, detalle.IdProducto, detalle.Cantidad, detalle.PrecioUnitario, detalle.Subtotal]
           );
-
+          // Actualizar stock...
           await connection.query(
             'UPDATE Productos SET Stock = Stock - ? WHERE IdProducto = ?',
             [detalle.Cantidad, detalle.IdProducto]
           );
+        }
+      }
+
+      // Insertar historial de descuentos
+      if (venta.DescuentosAplicados && venta.DescuentosAplicados.length > 0) {
+        for (const desc of venta.DescuentosAplicados) {
+           await connection.query(
+             `INSERT INTO VentaDescuentos (IdVenta, IdDescuento, MontoDescuento, TipoDescuento, DescripcionDescuento)
+              VALUES (?, ?, ?, ?, ?)`,
+             [
+                idVenta, 
+                desc.IdDescuento, 
+                desc.MontoDescuento, 
+                desc.TipoDescuento, 
+                desc.DescripcionDescuento || 'Descuento aplicado'
+             ]
+           );
+           
+           // Actualizar contador de usos
+           await connection.query(
+             'UPDATE Descuentos SET UsosActuales = UsosActuales + 1 WHERE IdDescuento = ?',
+             [desc.IdDescuento]
+           );
         }
       }
 

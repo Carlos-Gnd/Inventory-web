@@ -6,7 +6,7 @@ import { Notificacion } from '../../../types';
 import Card from '../../common/Card';
 import Badge from '../../common/Badge';
 import Button from '../../common/Button';
-import { Bell, AlertTriangle, Package, ArrowRight, Eye } from 'lucide-react';
+import { Bell, AlertTriangle, Package, ArrowRight } from 'lucide-react';
 import { formatDateTime } from '../../../utils/formatters';
 
 export default function NotificacionesWidget() {
