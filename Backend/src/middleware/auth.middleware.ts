@@ -11,7 +11,11 @@ export interface AuthRequest extends Request {
 
 export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): void => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    let token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token && req.query.token) {
+      token = req.query.token as string;
+    }
+
     if (!token) {
       res.status(401).json({ error: 'No se proporcionó token de autenticación' });
       return;

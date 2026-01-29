@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response  } from 'express';
 import { CategoriaRepository } from '../repositories/categoria.repository';
 import { authMiddleware, isAdmin } from '../middleware/auth.middleware';
 import { body, validationResult } from 'express-validator';
@@ -29,7 +29,7 @@ router.post(
       .notEmpty().withMessage('Nombre es requerido')
       .isLength({ max: 100 }).withMessage('Nombre no puede exceder 100 caracteres')
   ],
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -58,7 +58,7 @@ router.put(
       .notEmpty().withMessage('Nombre es requerido')
       .isLength({ max: 100 }).withMessage('Nombre no puede exceder 100 caracteres')
   ],
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });

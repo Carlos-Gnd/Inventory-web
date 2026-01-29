@@ -12,6 +12,7 @@ import {
   TrendingUp,
   Shield
 } from 'lucide-react';
+import { Tag } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -46,6 +47,12 @@ const navItems: NavItem[] = [
     name: 'Categorías',
     path: '/categorias',
     icon: <FolderOpen className="w-5 h-5" />,
+    adminOnly: true
+  },
+  {
+    name: 'Descuentos',
+    path: '/descuentos',
+    icon: <Tag className="w-5 h-5" />,
     adminOnly: true
   },
   {

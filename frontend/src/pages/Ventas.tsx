@@ -8,7 +8,7 @@ import Modal from '../components/common/Modal';
 import Table from '../components/common/Table';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Badge from '../components/common/Badge';
-import { Eye, Calendar } from 'lucide-react';
+import { Eye, Calendar, Receipt} from 'lucide-react';
 import { formatCurrency, formatDateTime } from '../utils/formatters';
 import toast from 'react-hot-toast';
 
@@ -106,18 +106,33 @@ export default function Ventas() {
     {
       key: 'actions',
       header: 'Acciones',
-      width: '100px',
+      width: '120px', // Aumenta un poco el ancho
       render: (venta: Venta) => (
-        <button
-          onClick={(e) => {
+        <div className="flex gap-2">
+          {/* Botón Ver Detalle (Existente) */}
+          <button
+            onClick={(e) => {
             e.stopPropagation();
             handleVerDetalle(venta);
-          }}
-          className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-          title="Ver Detalle"
-        >
-          <Eye className="w-4 h-4" />
-        </button>
+            }}
+            className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+            title="Ver Detalle"
+            >
+            <Eye className="w-4 h-4" />
+          </button>
+
+          {/* Botón Imprimir */}
+          <button
+            onClick={(e) => {
+            e.stopPropagation();
+            ventaService.imprimirTicket(venta.IdVenta!);
+            }}
+            className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            title="Imprimir Ticket"
+            >
+            <Receipt className="w-4 h-4" />
+          </button>
+        </div>
       )
     }
   ];

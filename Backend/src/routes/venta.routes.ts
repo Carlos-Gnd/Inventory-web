@@ -1,7 +1,8 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { VentaRepository } from '../repositories/venta.repository';
 import { authMiddleware, isAdmin, AuthRequest } from '../middleware/auth.middleware';
 import { body, validationResult } from 'express-validator';
+import { ticketService } from '../services/ticketService';
 
 const router = Router();
 const ventaRepo = new VentaRepository();
@@ -79,7 +80,7 @@ router.post(
     body('MetodoPago').notEmpty().withMessage('Método de pago es requerido'),
     body('DetallesVenta').isArray({ min: 1 }).withMessage('Debe incluir al menos un producto')
   ],
-  async (req: AuthRequest, res) => {
+  async (req: AuthRequest, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -139,6 +140,38 @@ router.post('/verificar-stock', async (req, res) => {
   } catch (error: any) {
     console.error('Error al verificar stock:', error);
     res.status(500).json({ error: 'Error al verificar stock' });
+  }
+});
+
+// Generar Ticket PDF
+router.get('/:id/ticket', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const idVenta = parseInt(req.params.id);
+
+    // 1. Obtener la venta
+    // Usamos listar y filtramos (solución rápida compatible con tu repo actual)
+    const ventas = await ventaRepo.listar(); 
+    const venta = ventas.find(v => v.IdVenta === idVenta);
+
+    if (!venta) {
+      res.status(404).json({ error: 'Venta no encontrada' });
+      return;
+    }
+
+    // 2. Obtener los detalles (productos)
+    const detalles = await ventaRepo.obtenerDetalleVenta(idVenta);
+
+    // 3. Configurar respuesta como PDF
+    res.setHeader('Content-Type', 'application/pdf');
+    // 'inline' hace que se abra en el navegador en lugar de descargar forzosamente
+    res.setHeader('Content-Disposition', `inline; filename=Ticket_${idVenta}.pdf`);
+
+    // 4. Generar
+    ticketService.generarTicket(venta, detalles, res);
+
+  } catch (error) {
+    console.error('Error al generar ticket:', error);
+    res.status(500).json({ error: 'Error al generar el ticket' });
   }
 });
 

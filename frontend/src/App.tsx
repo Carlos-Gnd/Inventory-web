@@ -16,6 +16,7 @@ import Reportes from './pages/Reportes';
 import HistorialSesiones from './pages/HistorialSesiones';
 import MiPerfil from './pages/MiPerfil';
 import Notificaciones from './pages/Notificaciones';
+import Descuentos from './pages/Descuentos';
 
 // Layout
 import Layout from './components/layout/Layout';
@@ -105,6 +106,14 @@ function App() {
               element={
                 <ProtectedRoute adminOnly>
                   <Categorias />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="descuentos"
+              element={
+                <ProtectedRoute adminOnly>
+                  <Descuentos />
                 </ProtectedRoute>
               }
             />

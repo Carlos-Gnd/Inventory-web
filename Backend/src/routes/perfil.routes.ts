@@ -253,7 +253,7 @@ router.delete('/mi-perfil/foto', async (req: AuthRequest, res: Response): Promis
       return;
     }
 
-    const actualizado = await usuarioRepo.actualizarPerfil(idUsuario, { FotoPerfil: null });
+    const actualizado = await usuarioRepo.actualizarPerfil(idUsuario, { FotoPerfil: undefined });
 
     if (!actualizado) {
       res.status(404).json({ error: 'Usuario no encontrado' });

@@ -237,6 +237,17 @@ export default function RegistrarVentas() {
         { duration: 4000 }
       );
 
+      if (window.confirm('¿Desea imprimir el ticket?')) {
+    // Necesitas el ID de la venta que acabas de crear.
+    // Asegúrate de que tu backend devuelve el ID en la respuesta
+    // Si tu respuesta es { message: '...', idVenta: 123 }, úsalo:
+    // ventaService.imprimirTicket(response.data.idVenta);
+    
+    // SI NO TIENES EL ID A MANO AÚN:
+    // Puedes simplemente recargar las ventas y dejar que lo imprima desde el historial,
+    // o mejorar el endpoint registrarVenta para que devuelva el ID (recomendado).
+      }
+
       clearCart();
       setMetodoPago('Efectivo');
       setMontoRecibido(0);

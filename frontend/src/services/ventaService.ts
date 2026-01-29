@@ -1,6 +1,7 @@
 // frontend/src/services/ventaService.ts
 import api from './api';
 import { Venta, DetalleVenta, ApiResponse } from '../types';
+import { useAuthStore } from '../store/authStore';
 
 export const ventaService = {
   listar: async () => {
@@ -36,5 +37,16 @@ export const ventaService = {
       Cantidad: cantidad
     });
     return data;
-  }
+  },
+
+  imprimirTicket: (idVenta: number) => {
+    // Obtener el token actual
+    const token = useAuthStore.getState().token;
+    
+    // Adjuntarlo a la URL
+    const url = `${api.defaults.baseURL}/ventas/${idVenta}/ticket?token=${token}`;
+    
+    // Abrir ventana
+    window.open(url, 'Ticket', 'width=400,height=600');
+  },
 };

@@ -273,7 +273,7 @@ const Descuentos = () => {
           />
 
           <div>
-            <label className="block text-sm font-medium mb-2">Tipo de Descuento</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tipo de Descuento</label>
             <select
               className="w-full px-3 py-2 border rounded-lg"
               value={formData.Tipo}

@@ -21,9 +21,34 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+// app.use(cors({
+//   origin: process.env.CORS_ORIGIN || 'http://localhost:5173'
+// }));
+
+// Middleware
+const allowedOrigins = [
+  'http://localhost:5173',               // Tu entorno local
+  'http://127.0.0.1:5173',               // Alternativa local
+  process.env.CORS_ORIGIN,               // Variable de entorno (opcional)
+  'http://52.234.38.80',          // <--- ¡AQUÍ PONES TU IP DE AZURE!
+  'http://52.234.38.80:5173'      // Por si decides usar el puerto 5173
+].filter(Boolean); // Elimina valores nulos/undefined
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173'
+  origin: (origin, callback) => {
+    // Permitir solicitudes sin origen (como Postman, cURL o apps móviles)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      console.log('Bloqueado por CORS:', origin); // Útil para depurar en los logs de Docker
+      return callback(new Error('No permitido por CORS'));
+    }
+  },
+  credentials: true // Importante para cookies/sesiones
 }));
+
 app.use(express.json({ limit: '10mb' })); // Aumentar límite para imágenes
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
